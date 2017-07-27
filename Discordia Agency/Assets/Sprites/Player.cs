@@ -6,12 +6,15 @@ public class Player : EntityBase{
 
     public float speed;
 
+    public float drag = 1.0f;
+
     private Rigidbody2D rb;
 
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
         ResizeRelativeToField();
+        rb.drag = drag;
 	}
 	
 	// Update is called once per frame
@@ -23,9 +26,10 @@ public class Player : EntityBase{
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
-
+        
         Vector2 movement = new Vector2(moveHorizontal, moveVertical);
 
+        
         rb.AddForce(movement * speed);
     }
 }
