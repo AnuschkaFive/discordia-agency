@@ -7,7 +7,7 @@ public class Ground : MonoBehaviour
 
     // Use this for initialization
     void Start()
-    {
+    {       
         Resize();
     }
 

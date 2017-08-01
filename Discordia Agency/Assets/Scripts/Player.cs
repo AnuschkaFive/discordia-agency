@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : EntityBase{
+    
 
     public float speed;
 
@@ -12,10 +13,11 @@ public class Player : EntityBase{
 
 	// Use this for initialization
 	void Start () {
+        Physics2D.gravity = new Vector3(0f, 0f, 10f);
         rb = GetComponent<Rigidbody2D>();
-        ResizeRelativeToField();
+       // ResizeRelativeToField();
         rb.drag = drag;
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -28,7 +30,6 @@ public class Player : EntityBase{
         float moveVertical = Input.GetAxis("Vertical");
         
         Vector2 movement = new Vector2(moveHorizontal, moveVertical);
-
         
         rb.AddForce(movement * speed);
     }
