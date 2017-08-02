@@ -36,5 +36,4 @@ public class GuardsBehaviour : MonoBehaviour {
             transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
         }
     }
-
 }

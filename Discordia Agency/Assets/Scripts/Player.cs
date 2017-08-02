@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : EntityBase{
-    
+public class Player : MonoBehaviour{    
 
     public float speed;
 
     public float drag = 1.0f;
+
+    public bool isDisguised = false;
 
     private Rigidbody2D rb;
 
@@ -32,5 +33,13 @@ public class Player : EntityBase{
         Vector2 movement = new Vector2(moveHorizontal, moveVertical);
         
         rb.AddForce(movement * speed);
+    }
+
+    private void toggleDisguise()
+    {
+        this.GetComponent<SpriteRenderer>().sprite = (this.isDisguised ? 
+            Resources.Load<Sprite>("Sprites/Player") : 
+            Resources.Load<Sprite>("Sprites/Player_disguised"));
+        this.isDisguised = !this.isDisguised;
     }
 }
