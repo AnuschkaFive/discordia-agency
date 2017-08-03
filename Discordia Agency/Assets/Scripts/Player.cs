@@ -14,6 +14,7 @@ public class Player : MonoBehaviour{
 
 	// Use this for initialization
 	void Start () {
+        // Sets the gravity so that the x-y-Plane is the plane to walk on.
         Physics2D.gravity = new Vector3(0f, 0f, 10f);
         rb = GetComponent<Rigidbody2D>();
        // ResizeRelativeToField();
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour{
 		
 	}
 
+    // Move the Player.
     private void FixedUpdate()
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
@@ -35,6 +37,7 @@ public class Player : MonoBehaviour{
         rb.AddForce(movement * speed);
     }
 
+    // Toggle the Player's sprite and variable "isDisguised" between disguised and undisguised.
     private void toggleDisguise()
     {
         this.GetComponent<SpriteRenderer>().sprite = (this.isDisguised ? 

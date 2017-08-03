@@ -12,7 +12,7 @@ public class Target : MonoBehaviour {
 	void Update () {
 	}
 
-    void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log(collision.gameObject.name);
     }
