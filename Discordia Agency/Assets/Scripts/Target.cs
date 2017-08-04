@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class Target : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    private GameObject guiGameStatus;
+
+    // Use this for initialization
+    void Start () {
+        this.guiGameStatus = GameObject.Find("Canvas_GUIGameStatus").gameObject;
 	}
 	
 	// Update is called once per frame
@@ -15,5 +18,6 @@ public class Target : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log(collision.gameObject.name);
+        this.guiGameStatus.GetComponent<GUIGameStatus>().setGameStatus(GameStatus.Won, true);
     }
 }

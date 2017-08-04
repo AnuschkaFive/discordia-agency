@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum GuardModus {
-    Patrolling, Seeking, Hunting, Unconscious 
+    Patrolling, Seeking, Hunting, KnockedOut 
+}
+
+public enum GuardRanges
+{
+    View, KnockOut, Disguise, Drag
 }
 
 public class GuardsBehaviour : MonoBehaviour {
     // Which step of the patrol path the guard is currently on.
     private int currStep;
-
-    // TODO: Wahrscheinlich nicht benötigt, Objektreferenzen reichen.
-    //private int id;
 
     // The speed with which the guard walks.
     public float speed;
@@ -25,48 +27,106 @@ public class GuardsBehaviour : MonoBehaviour {
     // The modus the guard is currently in.
     public GuardModus modus;
 
+    // Whether the Guard can currently be knocked out, because Player is close enough from behind.
     private bool canBeKnockedOut;
-    
 
-	// Use this for initialization
-	void Start () {
-        // TODO: Oder ID als public variable und in der Szene setzen.
-        // TODO: Wahrscheinlich gar nicht benötigt; Objektreferenzen reichen
-        //string guardName = this.gameObject.name.ToString();
-        //this.id = int.Parse(guardName.Substring(guardName.Length - 2));
+    // Whether the Player can disguise as this Guard, because Guard is knocked out and Player is close enough from any side.
+    private bool canBeDisguised;
 
+    private GameObject guiPlayerControl;
+
+    /// <summary>
+    /// Use this for initialization
+    /// </summary>
+    void Start () {
         this.currStep = 0;
         transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
+        this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame.
+    /// </summary>
     void Update() {
-        // Move the guard towards the next patrol point.
-        transform.position = Vector2.MoveTowards(transform.position, this.patrolPoints[currStep], this.speed * Time.deltaTime);
-
-        // If the patrol point is reached, set the next patrol point as target and adjust the guard's direction.
-        if(Vector2.Distance(transform.position, this.patrolPoints[currStep]) < 0.001f)
+        switch (this.modus)
         {
-            transform.position = this.patrolPoints[currStep];
-            currStep = (currStep + 1) % this.patrolPoints.Length;
-            transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
+            case GuardModus.Patrolling:
+                {
+                    // Move the guard towards the next patrol point.
+                    transform.position = Vector2.MoveTowards(transform.position, this.patrolPoints[currStep], this.speed * Time.deltaTime);
+
+                    // If the patrol point is reached, set the next patrol point as target and adjust the guard's direction.
+                    if (Vector2.Distance(transform.position, this.patrolPoints[currStep]) < 0.001f)
+                    {
+                        transform.position = this.patrolPoints[currStep];
+                        currStep = (currStep + 1) % this.patrolPoints.Length;
+                        transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
+                    }
+                    break;
+                }
         }
     }
 
-    // Changes both a Guard's modus and his sprite to "unconscious".
-    void setGuardUnconscious()
+    /// <summary>
+    /// 
+    /// </summary>
+    private void FixedUpdate()
     {
-        this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Unconsious");
-        this.modus = GuardModus.Unconscious;
+        if(this.canBeKnockedOut && Input.GetButton("KnockOut"))
+        {
+            this.knockOutGuard();
+            Debug.Log("isKnockedOut");
+        }
+
+        if(this.canBeDisguised && Input.GetButton("Disguise"))
+        {
+            this.disguiseAsGuard();
+        }
     }
 
-    void setCanBeKnockedOut(bool canBeKnockedOut)
+    /// <summary>
+    /// Changes both a Guard's modus and his sprite to "knocked out". Also deactivates the Guard's ViewRange (and its trigger).
+    /// Activated the Guard's DisguiseRange (and its trigger).
+    /// </summary>
+    void knockOutGuard()
+    {
+        this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_KnockedOut");
+        this.modus = GuardModus.KnockedOut;
+        this.setCanBeKnockedOut(false);
+        this.transform.GetChild((int)GuardRanges.View).gameObject.SetActive(false);
+        this.transform.GetChild((int)GuardRanges.KnockOut).gameObject.SetActive(false);
+        this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Sets whether the Guard can be knocked out, because Player is in range from behind.
+    /// </summary>
+    /// <param name="canBeKnockedOut">True, if Guard can be knocked out. False, otherwise.</param>
+    public void setCanBeKnockedOut(bool canBeKnockedOut)
     {
         this.canBeKnockedOut = canBeKnockedOut;
+        this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.KnockOut, canBeKnockedOut);
+        Debug.Log("canBeKnockedOut: " + canBeKnockedOut);
     }
 
-    bool getCanBeKnockedOut()
+    /// <summary>
+    /// Disguise the Player as this Guard.
+    /// </summary>
+    void disguiseAsGuard()
     {
-        return this.canBeKnockedOut;
+        this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(false);
+        this.setCanBeDisguised(false);
+        GameObject.Find("Player").gameObject.GetComponent<Player>().toggleDisguise();
+    }
+
+    /// <summary>
+    /// Sets whether the Player can disguise as this Guard, because Guard is knocked out and Player is close enough from any side.
+    /// </summary>
+    /// <param name="canBeDisguised"></param>
+    public void setCanBeDisguised(bool canBeDisguised)
+    {
+        this.canBeDisguised = canBeDisguised;
+        this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.Disguise, canBeDisguised);
+        Debug.Log("canBeDisguised: " + canBeDisguised);
     }
 }

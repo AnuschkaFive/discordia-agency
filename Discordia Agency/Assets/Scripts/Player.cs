@@ -4,29 +4,31 @@ using UnityEngine;
 
 public class Player : MonoBehaviour{    
 
-    public float speed;
-
-    public float drag = 1.0f;
+    private float speed = 2.0f;
 
     public bool isDisguised = false;
 
     private Rigidbody2D rb;
 
-	// Use this for initialization
-	void Start () {
+    /// <summary>
+    /// Use this for initialization
+    /// </summary>
+    void Start () {
         // Sets the gravity so that the x-y-Plane is the plane to walk on.
         Physics2D.gravity = new Vector3(0f, 0f, 10f);
         rb = GetComponent<Rigidbody2D>();
-       // ResizeRelativeToField();
-        rb.drag = drag;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    /// <summary>
+    /// Update is called once per frame
+    /// </summary>
+    void Update () {
 		
 	}
 
-    // Move the Player.
+    /// <summary>
+    /// Move the Player.
+    /// </summary>
     private void FixedUpdate()
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
@@ -37,8 +39,10 @@ public class Player : MonoBehaviour{
         rb.AddForce(movement * speed);
     }
 
-    // Toggle the Player's sprite and variable "isDisguised" between disguised and undisguised.
-    private void toggleDisguise()
+    /// <summary>
+    /// Toggle the Player's sprite and variable "isDisguised" between disguised and undisguised.
+    /// </summary>
+    public void toggleDisguise()
     {
         this.GetComponent<SpriteRenderer>().sprite = (this.isDisguised ? 
             Resources.Load<Sprite>("Sprites/Player") : 
