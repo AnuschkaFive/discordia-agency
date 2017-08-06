@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discordia Agency", "Discordia Agency.csproj", "{FAD14145-BBBB-D0F3-3606-FD09C285B9DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discordia Agency.Editor", "Discordia Agency.Editor.csproj", "{49C839D1-4B87-6A2F-A2A0-62F935B3390B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{FAD14145-BBBB-D0F3-3606-FD09C285B9DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAD14145-BBBB-D0F3-3606-FD09C285B9DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAD14145-BBBB-D0F3-3606-FD09C285B9DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C839D1-4B87-6A2F-A2A0-62F935B3390B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C839D1-4B87-6A2F-A2A0-62F935B3390B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C839D1-4B87-6A2F-A2A0-62F935B3390B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C839D1-4B87-6A2F-A2A0-62F935B3390B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,12 +18,12 @@ public class GuardsDisguise : MonoBehaviour {
     {
         if ((collision.gameObject.name == "Player") && (!collision.gameObject.GetComponent<Player>().isDisguised))
         {
-            this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().setCanBeDisguised(true);
+            this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDisguised(true);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().setCanBeDisguised(false);
+        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDisguised(false);
     }
 }

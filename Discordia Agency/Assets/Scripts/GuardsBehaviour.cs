@@ -40,7 +40,7 @@ public class GuardsBehaviour : MonoBehaviour {
     /// </summary>
     void Start () {
         this.currStep = 0;
-        transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
+        this.transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
         this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
     }
 
@@ -74,13 +74,13 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         if(this.canBeKnockedOut && Input.GetButton("KnockOut"))
         {
-            this.knockOutGuard();
+            this.KnockOutGuard();
             Debug.Log("isKnockedOut");
         }
 
         if(this.canBeDisguised && Input.GetButton("Disguise"))
         {
-            this.disguiseAsGuard();
+            this.DisguiseAsGuard();
         }
     }
 
@@ -88,11 +88,11 @@ public class GuardsBehaviour : MonoBehaviour {
     /// Changes both a Guard's modus and his sprite to "knocked out". Also deactivates the Guard's ViewRange (and its trigger).
     /// Activated the Guard's DisguiseRange (and its trigger).
     /// </summary>
-    void knockOutGuard()
+    void KnockOutGuard()
     {
         this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_KnockedOut");
         this.modus = GuardModus.KnockedOut;
-        this.setCanBeKnockedOut(false);
+        this.SetCanBeKnockedOut(false);
         this.transform.GetChild((int)GuardRanges.View).gameObject.SetActive(false);
         this.transform.GetChild((int)GuardRanges.KnockOut).gameObject.SetActive(false);
         this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(true);
@@ -102,7 +102,7 @@ public class GuardsBehaviour : MonoBehaviour {
     /// Sets whether the Guard can be knocked out, because Player is in range from behind.
     /// </summary>
     /// <param name="canBeKnockedOut">True, if Guard can be knocked out. False, otherwise.</param>
-    public void setCanBeKnockedOut(bool canBeKnockedOut)
+    public void SetCanBeKnockedOut(bool canBeKnockedOut)
     {
         this.canBeKnockedOut = canBeKnockedOut;
         this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.KnockOut, canBeKnockedOut);
@@ -112,10 +112,10 @@ public class GuardsBehaviour : MonoBehaviour {
     /// <summary>
     /// Disguise the Player as this Guard.
     /// </summary>
-    void disguiseAsGuard()
+    void DisguiseAsGuard()
     {
         this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(false);
-        this.setCanBeDisguised(false);
+        this.SetCanBeDisguised(false);
         GameObject.Find("Player").gameObject.GetComponent<Player>().toggleDisguise();
     }
 
@@ -123,7 +123,7 @@ public class GuardsBehaviour : MonoBehaviour {
     /// Sets whether the Player can disguise as this Guard, because Guard is knocked out and Player is close enough from any side.
     /// </summary>
     /// <param name="canBeDisguised"></param>
-    public void setCanBeDisguised(bool canBeDisguised)
+    public void SetCanBeDisguised(bool canBeDisguised)
     {
         this.canBeDisguised = canBeDisguised;
         this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.Disguise, canBeDisguised);
