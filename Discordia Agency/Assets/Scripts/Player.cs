@@ -35,8 +35,9 @@ public class Player : MonoBehaviour{
         float moveVertical = Input.GetAxis("Vertical");
         
         Vector2 movement = new Vector2(moveHorizontal, moveVertical);
-        
-        rb.AddForce(movement * speed);
+
+        // Set velocity directly, so that the Player doesn't have drag/momentum (instead of using AddForce()).
+        rb.velocity = movement * speed;
     }
 
     /// <summary>

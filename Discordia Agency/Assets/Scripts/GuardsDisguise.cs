@@ -14,14 +14,12 @@ public class GuardsDisguise : MonoBehaviour {
 		
 	}
 
-    private void OnEnable()
-    {
-        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().setCanBeDisguised(true);
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().setCanBeDisguised(true);
+        if ((collision.gameObject.name == "Player") && (!collision.gameObject.GetComponent<Player>().isDisguised))
+        {
+            this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().setCanBeDisguised(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
