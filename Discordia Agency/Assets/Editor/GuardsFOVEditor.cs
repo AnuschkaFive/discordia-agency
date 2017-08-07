@@ -21,7 +21,6 @@ public class GuardsFOVEditor : Editor {
         Handles.color = Color.red;
         foreach(Transform visibleTarget in fov.visibleTargets)
         {
-            Debug.Log("Zeichne Ziellinie");
             Handles.DrawLine(fov.transform.parent.position, visibleTarget.position);
         }
     }
