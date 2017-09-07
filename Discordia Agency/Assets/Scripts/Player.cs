@@ -6,7 +6,11 @@ public class Player : MonoBehaviour{
 
     private float speed = 2.0f;
 
+    private GameObject guiPlayerControl;
+
     public bool isDisguised = false;
+
+    private bool hasThrowableObject;
 
     private Rigidbody2D rb;
 
@@ -17,13 +21,20 @@ public class Player : MonoBehaviour{
         // Sets the gravity so that the x-y-Plane is the plane to walk on.
         Physics2D.gravity = new Vector3(0f, 0f, 10f);
         rb = GetComponent<Rigidbody2D>();
+
+        this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
     }
 
     /// <summary>
     /// Update is called once per frame
     /// </summary>
     void Update () {
-		
+		if(this.hasThrowableObject && Input.GetButton("Throw"))
+        {
+            Debug.Log("Objekt wird geworfen");
+            this.ToggleHasThrowableObject();
+            GameObject.Find("Object_01").gameObject.GetComponent<ThrowableObject>().Spawn();
+        }
 	}
 
     /// <summary>
@@ -43,11 +54,29 @@ public class Player : MonoBehaviour{
     /// <summary>
     /// Toggle the Player's sprite and variable "isDisguised" between disguised and undisguised.
     /// </summary>
-    public void toggleDisguise()
+    public void ToggleDisguise()
     {
         this.GetComponent<SpriteRenderer>().sprite = (this.isDisguised ? 
             Resources.Load<Sprite>("Sprites/Player") : 
             Resources.Load<Sprite>("Sprites/Player_disguised"));
         this.isDisguised = !this.isDisguised;
+    }
+
+    /// <summary>
+    /// Toggle whether the Player has a throwable object or not.
+    /// </summary>
+    public void ToggleHasThrowableObject()
+    {        
+        this.hasThrowableObject = !this.hasThrowableObject;
+        this.guiPlayerControl.gameObject.GetComponent<GUIPlayerControl>().SetControlStatus(Controls.Throw, this.hasThrowableObject);
+    }
+
+    /// <summary>
+    /// Get whether the Player has a throwable object or not.
+    /// </summary>
+    /// <returns></returns>
+    public bool GetHasThrowableObject()
+    {
+        return this.hasThrowableObject;
     }
 }

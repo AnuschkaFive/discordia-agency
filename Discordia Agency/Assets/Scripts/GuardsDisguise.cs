@@ -24,6 +24,9 @@ public class GuardsDisguise : MonoBehaviour {
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDisguised(false);
+        if (collision.gameObject.name == "Player")
+        {
+            this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDisguised(false);
+        }
     }
 }

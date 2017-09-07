@@ -24,6 +24,9 @@ public class GuardsDrag : MonoBehaviour {
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDragged(false);
+        if (collision.gameObject.name == "Player")
+        {
+            this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDragged(false);
+        }
     }
 }

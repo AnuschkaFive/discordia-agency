@@ -122,7 +122,7 @@ public class GuardsBehaviour : MonoBehaviour {
     public void SetCanBeKnockedOut(bool canBeKnockedOut)
     {
         this.canBeKnockedOut = canBeKnockedOut;
-        this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.KnockOut, canBeKnockedOut);
+        this.guiPlayerControl.GetComponent<GUIPlayerControl>().SetControlStatus(Controls.KnockOut, canBeKnockedOut);
         Debug.Log("canBeKnockedOut: " + canBeKnockedOut);
     }
 
@@ -133,7 +133,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(false);
         this.SetCanBeDisguised(false);
-        GameObject.Find("Player").gameObject.GetComponent<Player>().toggleDisguise();
+        GameObject.Find("Player").gameObject.GetComponent<Player>().ToggleDisguise();
     }
 
     /// <summary>
@@ -143,7 +143,7 @@ public class GuardsBehaviour : MonoBehaviour {
     public void SetCanBeDisguised(bool canBeDisguised)
     {
         this.canBeDisguised = canBeDisguised;
-        this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.Disguise, canBeDisguised);
+        this.guiPlayerControl.GetComponent<GUIPlayerControl>().SetControlStatus(Controls.Disguise, canBeDisguised);
         Debug.Log("canBeDisguised: " + canBeDisguised);
     }
 
@@ -181,7 +181,7 @@ public class GuardsBehaviour : MonoBehaviour {
     public void SetCanBeDragged(bool canBeDragged)
     {
         this.canBeDragged = canBeDragged;
-        this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.Drag, canBeDragged);
+        this.guiPlayerControl.GetComponent<GUIPlayerControl>().SetControlStatus(Controls.Drag, canBeDragged);
         Debug.Log("canBeDragged: " + canBeDragged);
     }
 }

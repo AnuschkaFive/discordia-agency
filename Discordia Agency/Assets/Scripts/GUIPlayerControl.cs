@@ -21,9 +21,14 @@ public class GUIPlayerControl : MonoBehaviour {
 		
 	}
 
-    public void setControlStatus(Controls controlToChange, bool newStatus)
+    /// <summary>
+    /// Changes whether a control option is displayed in the GUI or not.
+    /// </summary>
+    /// <param name="controlToChange"></param>
+    /// <param name="newStatus"></param>
+    public void SetControlStatus(Controls controlToChange, bool newStatus)
     {
         //this.controlStatus[(int)controlToChange] = newStatus;
         this.transform.GetChild((int)controlToChange).gameObject.SetActive(newStatus);
-    }
+    }   
 }

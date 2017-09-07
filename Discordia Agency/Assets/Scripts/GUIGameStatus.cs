@@ -19,7 +19,7 @@ public class GUIGameStatus : MonoBehaviour {
 		
 	}
 
-    public void setGameStatus(GameStatus gameStatusToChange, bool newStatus)
+    public void SetGameStatus(GameStatus gameStatusToChange, bool newStatus)
     {
         //this.controlStatus[(int)controlToChange] = newStatus;
         this.transform.GetChild((int)gameStatusToChange).gameObject.SetActive(newStatus);

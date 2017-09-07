@@ -82,7 +82,7 @@ public class GuardsFOV : MonoBehaviour {
                 if(!Physics2D.Raycast(this.transform.parent.position, dirToTarget, distToTarget, obstacleMask))
                 {
                     this.visibleTargets.Add(target);
-                    this.guiGameStatus.GetComponent<GUIGameStatus>().setGameStatus(GameStatus.Lost, true);
+                    this.guiGameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
                     Debug.Log(target.gameObject.name + " ran into " + this.transform.parent.gameObject.name + "'s View!");
                 }
             }
