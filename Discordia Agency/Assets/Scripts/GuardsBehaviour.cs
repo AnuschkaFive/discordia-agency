@@ -33,6 +33,12 @@ public class GuardsBehaviour : MonoBehaviour {
     // Whether the Player can disguise as this Guard, because Guard is knocked out and Player is close enough from any side.
     private bool canBeDisguised;
 
+    // Whether the Player can drag this Guard, because Guard is knocked out and Player is close enough from any side.
+    private bool canBeDragged;
+
+    // Whether the Guard is currently being dragged.
+    private bool isBeingDragged;
+
     private GameObject guiPlayerControl;
 
     /// <summary>
@@ -72,15 +78,25 @@ public class GuardsBehaviour : MonoBehaviour {
     /// </summary>
     private void FixedUpdate()
     {
-        if(this.canBeKnockedOut && Input.GetButton("KnockOut"))
+        if(this.canBeKnockedOut && Input.GetButtonDown("KnockOut"))
         {
             this.KnockOutGuard();
             Debug.Log("isKnockedOut");
         }
 
-        if(this.canBeDisguised && Input.GetButton("Disguise"))
+        if(this.canBeDisguised && Input.GetButtonDown("Disguise"))
         {
             this.DisguiseAsGuard();
+        }
+
+        if(this.canBeDragged && !this.isBeingDragged && Input.GetButtonDown("Drag"))
+        {
+           this.StartDragGuard();
+        }
+
+        if (this.isBeingDragged && Input.GetButtonUp("Drag"))
+        {
+            this.StopDragGuard();
         }
     }
 
@@ -96,6 +112,7 @@ public class GuardsBehaviour : MonoBehaviour {
         this.transform.GetChild((int)GuardRanges.View).gameObject.SetActive(false);
         this.transform.GetChild((int)GuardRanges.KnockOut).gameObject.SetActive(false);
         this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(true);
+        this.transform.GetChild((int)GuardRanges.Drag).gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -128,5 +145,43 @@ public class GuardsBehaviour : MonoBehaviour {
         this.canBeDisguised = canBeDisguised;
         this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.Disguise, canBeDisguised);
         Debug.Log("canBeDisguised: " + canBeDisguised);
+    }
+
+    /// <summary>
+    /// Player drags the knocked out Guard along.
+    /// </summary>
+    public void StartDragGuard()
+    {
+        Debug.Log("Guard is being dragged");
+        this.isBeingDragged = true;
+        this.transform.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        this.transform.GetComponent<SpringJoint2D>().enabled = true;
+    }
+
+    /// <summary>
+    /// Player stops dragging the knocked out Guard along.
+    /// </summary>
+    public void StopDragGuard()
+    {
+        Debug.Log("Guard is not being dragged anymore");
+        this.isBeingDragged = false;
+        this.transform.GetComponent<SpringJoint2D>().enabled = false;
+        this.transform.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        // Triggers need to be de- and re-activated after RigidBodyType has changed.
+        this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(false);
+        this.transform.GetChild((int)GuardRanges.Drag).gameObject.SetActive(false);
+        this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(true);
+        this.transform.GetChild((int)GuardRanges.Drag).gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Sets whether the Player can drag this Guard, because Guard is knocked out and Player is close enough from any side.
+    /// </summary>
+    /// <param name="canBeDragged"></param>
+    public void SetCanBeDragged(bool canBeDragged)
+    {
+        this.canBeDragged = canBeDragged;
+        this.guiPlayerControl.GetComponent<GUIPlayerControl>().setControlStatus(Controls.Drag, canBeDragged);
+        Debug.Log("canBeDragged: " + canBeDragged);
     }
 }
