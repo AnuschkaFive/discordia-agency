@@ -22,7 +22,7 @@ public class GuardsFOV : MonoBehaviour {
     private LayerMask obstacleMask;
     private LayerMask guardMask;
 
-    private GameObject guiGameStatus;
+    private GameObject gameStatus;
 
     [HideInInspector]
     public List<Transform> visibleTargets = new List<Transform>();
@@ -32,7 +32,7 @@ public class GuardsFOV : MonoBehaviour {
         this.playerMask = LayerMask.GetMask("Player");
         this.obstacleMask = LayerMask.GetMask("Obstacles");
         this.guardMask = LayerMask.GetMask("Guards");
-        this.guiGameStatus = GameObject.Find("Canvas_GUIGameStatus").gameObject;
+        this.gameStatus = GameObject.Find("GameStatus").gameObject;
         this.viewMesh = new Mesh();
         this.viewMesh.name = "ViewMesh";
         this.viewMeshFilter.mesh = viewMesh;
@@ -82,7 +82,7 @@ public class GuardsFOV : MonoBehaviour {
                 if(!Physics2D.Raycast(this.transform.parent.position, dirToTarget, distToTarget, obstacleMask))
                 {
                     this.visibleTargets.Add(target);
-                    this.guiGameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
+                    this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
                     Debug.Log(target.gameObject.name + " ran into " + this.transform.parent.gameObject.name + "'s View!");
                 }
             }

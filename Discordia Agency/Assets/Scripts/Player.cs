@@ -32,8 +32,9 @@ public class Player : MonoBehaviour{
 		if(this.hasThrowableObject && Input.GetButton("Throw"))
         {
             Debug.Log("Objekt wird geworfen");
-            this.ToggleHasThrowableObject();
-            GameObject.Find("Object_01").gameObject.GetComponent<ThrowableObject>().Spawn();
+            this.transform.GetChild(0).GetComponent<ThrowableObjectOnPlayer>().Throw();
+            //this.ToggleHasThrowableObject();
+            GameObject.Find("Object_01").gameObject.GetComponent<ThrowableObjectOnGround>().Spawn();
         }
 	}
 
@@ -69,6 +70,7 @@ public class Player : MonoBehaviour{
     {        
         this.hasThrowableObject = !this.hasThrowableObject;
         this.guiPlayerControl.gameObject.GetComponent<GUIPlayerControl>().SetControlStatus(Controls.Throw, this.hasThrowableObject);
+        this.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = this.hasThrowableObject;
     }
 
     /// <summary>
