@@ -29,13 +29,7 @@ public class Player : MonoBehaviour{
     /// Update is called once per frame
     /// </summary>
     void Update () {
-		if(this.hasThrowableObject && Input.GetButton("Throw"))
-        {
-            Debug.Log("Objekt wird geworfen");
-            this.transform.GetChild(0).GetComponent<ThrowableObjectOnPlayer>().Throw();
-            //this.ToggleHasThrowableObject();
-            GameObject.Find("Object_01").gameObject.GetComponent<ThrowableObjectOnGround>().Spawn();
-        }
+
 	}
 
     /// <summary>
