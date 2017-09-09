@@ -41,6 +41,10 @@ public class GuardsBehaviour : MonoBehaviour {
 
     private GameObject guiPlayerControl;
 
+    private GuardsFOV FOV;
+
+    private GameObject gameStatus;
+
     /// <summary>
     /// Use this for initialization
     /// </summary>
@@ -48,6 +52,8 @@ public class GuardsBehaviour : MonoBehaviour {
         this.currStep = 0;
         this.transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
         this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
+        this.FOV = this.GetComponentInChildren<GuardsFOV>();
+        this.gameStatus = GameObject.Find("GameStatus").gameObject;
     }
 
     /// <summary>
@@ -98,6 +104,17 @@ public class GuardsBehaviour : MonoBehaviour {
         {
             this.StopDragGuard();
         }
+        if (this.FOV.visiblePlayers.Count > 0)
+        {
+            this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
+        }
+        foreach (Transform guard in this.FOV.visibleGuards)
+        {
+            if(guard.GetComponent<GuardsBehaviour>().modus == GuardModus.KnockedOut)
+            {
+                Debug.Log("Found knocked out Guard!");
+            }
+        }
     }
 
     /// <summary>
@@ -129,7 +146,7 @@ public class GuardsBehaviour : MonoBehaviour {
     /// <summary>
     /// Disguise the Player as this Guard.
     /// </summary>
-    void DisguiseAsGuard()
+    public void DisguiseAsGuard()
     {
         this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(false);
         this.SetCanBeDisguised(false);

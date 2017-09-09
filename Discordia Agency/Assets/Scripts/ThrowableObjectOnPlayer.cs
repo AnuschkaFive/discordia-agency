@@ -4,23 +4,40 @@ using UnityEngine;
 
 public class ThrowableObjectOnPlayer : MonoBehaviour {
 
-    private float power = 5f;
+    private float minPower = 0.1f;
+
+    private float maxPower = 5f;
+
+    private float powerChangeSpeed = 0.08f;
+
+    private float power;
 
     private float rotationSpeed = 100f;
 
     private Player player;
 
+    private ThrowableObjectPowerMeter powerMeter;
+
     private bool isFlying;
 
-    public Vector2 startPosition;
+    private bool powerIsBeingChanged;
 
-    public Vector2 targetPosition;
+    private bool powerIsIncreasing = true;
+
+    private Vector2 startPosition;
+
+    private Vector2 targetPosition;
+
+    private LayerMask obstacleMask;
 
 	// Use this for initialization
 	void Start () {
         this.player = this.gameObject.GetComponentInParent<Player>();
         startPosition = this.transform.localPosition;
-	}
+        this.powerMeter = this.GetComponentInChildren<ThrowableObjectPowerMeter>();
+        this.power = this.minPower;
+        this.obstacleMask = LayerMask.GetMask("Obstacles");
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -34,11 +51,49 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
             {
                 this.ChangeDirection(this.rotationSpeed);
             }
+            if (Input.GetButtonDown("Throw"))
+            {
+                this.powerIsBeingChanged = true;
+                StartCoroutine(this.ChangePower());           
+            }
             if (Input.GetButtonUp("Throw"))
             {
-                this.Throw();                
+                this.powerIsBeingChanged = false;
+                this.Throw();
             }
         }
+    }
+
+    /// <summary>
+    /// Change the amount of power the object is being thrown with and displays the according power meter.
+    /// </summary>
+    /// <returns>Loop</returns>
+    private IEnumerator ChangePower()
+    {
+        this.powerMeter.displayPowerMeter();
+        while(this.powerIsBeingChanged)
+        {
+            if (this.powerIsIncreasing && this.power >= this.maxPower)
+            {
+                this.powerIsIncreasing = false;
+            }
+            if (!this.powerIsIncreasing && this.power <= this.minPower)
+            {
+                this.powerIsIncreasing = true;
+            }
+
+            if (this.powerIsIncreasing)
+            {
+                this.power += this.powerChangeSpeed;
+            }
+            else
+            {
+                this.power -= this.powerChangeSpeed;
+            }
+            this.powerMeter.updatePowerMeter(this.power / (this.maxPower - this.minPower));
+            yield return null;
+        }
+        this.powerMeter.hidePowerMeter();
     }
 
     /// <summary>
@@ -51,22 +106,34 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
         this.transform.RotateAround(this.transform.parent.transform.position, Vector3.back, change * Time.deltaTime);
     }
 
-    public void SetPower(float newPower)
-    {
-
-    }
-
-    public void Throw()
+    /// <summary>
+    /// Throw the object in the direction it is facing with the determined power.
+    /// </summary>
+    private void Throw()
     {
         this.isFlying = true;
         this.targetPosition = this.player.transform.position + Vector3.Normalize(this.transform.position - this.player.transform.position) * this.power;
         Debug.Log("Player Pos: " + this.player.transform.position);
         Debug.Log("Objekt Pos: " + this.transform.position);
         Debug.Log("Objekt Target: " + this.targetPosition);
+
+        // Check if there is an Obstacle (= a wall) in the way.
+        RaycastHit2D[] hits = new RaycastHit2D[1];        
+        if(Physics2D.RaycastNonAlloc(this.transform.position, this.targetPosition - (Vector2)this.transform.position, hits, Vector2.Distance(this.transform.position, this.targetPosition), this.obstacleMask) > 0 )
+        {
+            this.targetPosition = hits[0].point;
+        }
         StartCoroutine(this.MoveObject(this.targetPosition));       
     }
 
-    IEnumerator MoveObject(Vector2 target)
+    /// <summary>
+    /// Moves the thrown object until it reaches its target location.
+    /// Afterwards, returns the object itself to its original location on the Player body, so that it is ready for the next throw,
+    /// and hides it again, so that the Player needs to pick up another one.
+    /// </summary>
+    /// <param name="target">Target location of the throw.</param>
+    /// <returns>Loop</returns>
+    private IEnumerator MoveObject(Vector2 target)
     {
         Debug.Log("Objekt bewegst sich!");
         while ((Vector2.Distance(this.transform.position, target) > 0.01f)) {

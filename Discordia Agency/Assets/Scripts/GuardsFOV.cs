@@ -8,43 +8,78 @@ using UnityEngine;
 public class GuardsFOV : MonoBehaviour {
     [Range(0, 360)]
     public float viewAngle;
-    [Range(0,10)]
+    [Range(0, 10)]
     public float viewRadius;
+    [Range(0, 1)]
+    public float reducedViewRadius; 
 
     public float meshResolution;
     public int edgeResolveIterations;
     public float edgeDstThreshold;
 
-    public MeshFilter viewMeshFilter;
-    private Mesh viewMesh;
+    public MeshFilter viewMeshFilterRegular;
+    private Mesh viewMeshRegular;
+    public MeshFilter viewMeshFilterReduced;
+    private Mesh viewMeshReduced;
 
     private LayerMask playerMask;
     private LayerMask obstacleMask;
     private LayerMask guardMask;
 
-    private GameObject gameStatus;
+
+    private GameObject player;
 
     [HideInInspector]
-    public List<Transform> visibleTargets = new List<Transform>();
+    public List<Transform> visibleGuards = new List<Transform>();
 
-	// Use this for initialization
-	void Start () {
+    [HideInInspector]
+    public List<Transform> visiblePlayers = new List<Transform>();
+
+    // Use this for initialization
+    void Start () {
         this.playerMask = LayerMask.GetMask("Player");
         this.obstacleMask = LayerMask.GetMask("Obstacles");
         this.guardMask = LayerMask.GetMask("Guards");
-        this.gameStatus = GameObject.Find("GameStatus").gameObject;
-        this.viewMesh = new Mesh();
-        this.viewMesh.name = "ViewMesh";
-        this.viewMeshFilter.mesh = viewMesh;
+        this.player = GameObject.Find("Player").gameObject;
+        this.viewMeshRegular = new Mesh();
+        this.viewMeshRegular.name = "ViewMeshRegular";
+        this.viewMeshFilterRegular.mesh = viewMeshRegular;
+        this.viewMeshReduced = new Mesh();
+        this.viewMeshReduced.name = "ViewMeshReduced";
+        this.viewMeshFilterReduced.mesh = viewMeshReduced;
     }
 	
 	/// <summary>
     /// Late update is called after inputs have been executed.
     /// </summary>
 	void LateUpdate () {
-        this.FindVisibleTargets();
-        this.DrawFieldOfFiew();
+        this.UpdateVisibleTargets();
+        this.UpdateFieldsOfView();
 	}
+
+    /// <summary>
+    /// Updates the list of visible Players (with different radius, depending on whether they are disguised or not)
+    /// and the list of knocked out Guards.
+    /// </summary>
+    private void UpdateVisibleTargets()
+    {
+        this.visiblePlayers = this.player.GetComponent<Player>().isDisguised ? 
+            this.FindVisibleTargets(this.playerMask, this.viewRadius * this.reducedViewRadius) : 
+            this.FindVisibleTargets(this.playerMask, this.viewRadius); 
+
+        this.visibleGuards = this.FindVisibleTargets(this.guardMask, this.viewRadius);
+    }
+
+    private void UpdateFieldsOfView()
+    {
+        this.viewMeshRegular.Clear();
+        this.viewMeshReduced.Clear();
+        this.DrawFieldOfFiew(this.viewMeshRegular, this.viewRadius);
+        if (this.player.GetComponent<Player>().isDisguised)
+        {
+            this.DrawFieldOfFiew(this.viewMeshReduced, this.viewRadius * this.reducedViewRadius);
+        }
+    }
 
     /// <summary>
     /// Takes the angle the FOV is facing in and calculates the corresponding directional vector.
@@ -67,32 +102,35 @@ public class GuardsFOV : MonoBehaviour {
     /// (b) within the specified view angle and 
     /// (c) not occluded by an obstacle (= anything on the Layer "Obstacles").
     /// </summary>
-    private void FindVisibleTargets()
+    /// <param name="mask">The specified layer on which GameObjects are located.</param>
+    /// <param name="viewRadius">The specified view radius in which GameObjects are located.</param>
+    /// <returns>List with all found GameObjects.</returns>
+    private List<Transform> FindVisibleTargets(LayerMask mask, float viewRadius)
     {
-        this.visibleTargets.Clear();
-        Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(this.transform.parent.position, this.viewRadius, playerMask);
-        for(int i = 0; i < targetsInViewRadius.Length; i++)
+        List<Transform> visibleTargets = new List<Transform>();
+        Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(this.transform.parent.position, viewRadius, mask);
+        for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
             Transform target = targetsInViewRadius[i].transform;
             Vector2 dirToTarget = (target.position - this.transform.parent.position).normalized;
-            if(Vector2.Angle(this.transform.parent.up, dirToTarget) < viewAngle / 2)
+            if(Vector2.Angle(this.transform.parent.up, dirToTarget) < this.viewAngle / 2)
             {
                 float distToTarget = Vector2.Distance(this.transform.parent.position, target.position);
 
                 if(!Physics2D.Raycast(this.transform.parent.position, dirToTarget, distToTarget, obstacleMask))
                 {
-                    this.visibleTargets.Add(target);
-                    this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
-                    Debug.Log(target.gameObject.name + " ran into " + this.transform.parent.gameObject.name + "'s View!");
+                    visibleTargets.Add(target);
+                    //Debug.Log(target.gameObject.name + " ran into " + this.transform.parent.gameObject.name + "'s View!");
                 }
             }
         }
+        return visibleTargets;
     }
 
     /// <summary>
     /// Visualises the FOV.
     /// </summary>
-    private void DrawFieldOfFiew()
+    private void DrawFieldOfFiew(Mesh meshToDraw, float viewRadius)
     {
         int stepCount = Mathf.RoundToInt(this.viewAngle * this.meshResolution);
         float stepAngleSize = viewAngle / stepCount;
@@ -101,7 +139,7 @@ public class GuardsFOV : MonoBehaviour {
         for (int i = 0; i <= stepCount; i++)
         {
             float angle = this.transform.parent.eulerAngles.z - this.viewAngle / 2 + stepAngleSize * i;
-            ViewCastInfo newViewCast = this.ViewCast(angle);
+            ViewCastInfo newViewCast = this.ViewCast(angle, viewRadius);
 
             if(i > 0)
             {
@@ -109,7 +147,7 @@ public class GuardsFOV : MonoBehaviour {
                 bool edgeDstThresholdExceeded = Mathf.Abs(oldViewCast.dst - newViewCast.dst) > edgeDstThreshold;
                 if(oldViewCast.hit != newViewCast.hit || (oldViewCast.hit && newViewCast.hit && edgeDstThresholdExceeded))
                 {
-                    EdgeInfo edge = this.FindEdge(oldViewCast, newViewCast);
+                    EdgeInfo edge = this.FindEdge(oldViewCast, newViewCast, viewRadius);
                     if(edge.pointA != Vector2.zero)
                     {
                         viewPoints.Add(edge.pointA);
@@ -143,10 +181,10 @@ public class GuardsFOV : MonoBehaviour {
             }
         }
 
-        viewMesh.Clear();
-        viewMesh.vertices = (Vector3[])vertices;
-        viewMesh.triangles = triangles;
-        viewMesh.RecalculateNormals();
+        meshToDraw.Clear();
+        meshToDraw.vertices = (Vector3[])vertices;
+        meshToDraw.triangles = triangles;
+        meshToDraw.RecalculateNormals();
     }
 
     /// <summary>
@@ -154,8 +192,9 @@ public class GuardsFOV : MonoBehaviour {
     /// </summary>
     /// <param name="minViewCast">The ray to the left of the edge.</param>
     /// <param name="maxViewCast">The ray to the right of the edge.</param>
+    /// <param name="viewRadius">The view radius for finding an edge.</param>
     /// <returns>The point closest to the right and to the left of the edge.</returns>
-    private EdgeInfo FindEdge(ViewCastInfo minViewCast, ViewCastInfo maxViewCast)
+    private EdgeInfo FindEdge(ViewCastInfo minViewCast, ViewCastInfo maxViewCast, float viewRadius)
     {
         float minAngle = minViewCast.angle;
         float maxAngle = maxViewCast.angle;
@@ -165,7 +204,7 @@ public class GuardsFOV : MonoBehaviour {
         for(int i = 0; i < this.edgeResolveIterations; i++)
         {
             float angle = (minAngle + maxAngle) / 2;
-            ViewCastInfo newViewCast = ViewCast(angle);
+            ViewCastInfo newViewCast = ViewCast(angle, viewRadius);
             // Test against edge distance treshold is necessary in case two obstacles are behind each other.
             bool edgeDstThresholdExceeded = Mathf.Abs(minViewCast.dst - newViewCast.dst) > edgeDstThreshold;
             if (newViewCast.hit == minViewCast.hit && !edgeDstThresholdExceeded)
@@ -185,17 +224,18 @@ public class GuardsFOV : MonoBehaviour {
     /// Casts a ray and returns information about the first object that was hit, if any.
     /// </summary>
     /// <param name="globalAngle">The global angle, in degrees, in which the ray is cast.</param>
+    /// <param name="viewRadius">The view radius for the ray.</param>
     /// <returns>Information about the Viewcast.</returns>
-    private ViewCastInfo ViewCast(float globalAngle)
+    private ViewCastInfo ViewCast(float globalAngle, float viewRadius)
     {
         Vector2 dir = DirFromAngle(globalAngle, true);
         RaycastHit2D[] hits = new RaycastHit2D[1];
-        if(Physics2D.RaycastNonAlloc(this.transform.parent.position, dir, hits, this.viewRadius, this.obstacleMask) > 0)
+        if(Physics2D.RaycastNonAlloc(this.transform.parent.position, dir, hits, viewRadius, this.obstacleMask) > 0)
         {
             return new ViewCastInfo(true, hits[0].point, hits[0].distance, globalAngle);
         } else
         {
-            return new ViewCastInfo(false, (Vector2)this.transform.parent.position + dir * this.viewRadius, this.viewRadius, globalAngle);
+            return new ViewCastInfo(false, (Vector2)this.transform.parent.position + dir * viewRadius, viewRadius, globalAngle);
         }
     }
 
