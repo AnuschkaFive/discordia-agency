@@ -45,6 +45,12 @@ public class GuardsBehaviour : MonoBehaviour {
 
     private GameObject gameStatus;
 
+    private AILerp aiLerp;
+
+    private Seeker seeker;
+
+    private GameObject target;
+
     /// <summary>
     /// Use this for initialization
     /// </summary>
@@ -54,6 +60,12 @@ public class GuardsBehaviour : MonoBehaviour {
         this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
         this.FOV = this.GetComponentInChildren<GuardsFOV>();
         this.gameStatus = GameObject.Find("GameStatus").gameObject;
+        this.aiLerp = this.GetComponent<AILerp>();
+        this.target = this.aiLerp.target.gameObject;
+        this.seeker = this.GetComponent<Seeker>();
+        // Set the Guard's target to the initial patrol point.
+        this.target.transform.position = this.patrolPoints[currStep];
+        this.aiLerp.SearchPath();
     }
 
     /// <summary>
@@ -64,15 +76,12 @@ public class GuardsBehaviour : MonoBehaviour {
         {
             case GuardModus.Patrolling:
                 {
-                    // Move the guard towards the next patrol point.
-                    transform.position = Vector2.MoveTowards(transform.position, this.patrolPoints[currStep], this.speed * Time.deltaTime);
-
-                    // If the patrol point is reached, set the next patrol point as target and adjust the guard's direction.
-                    if (Vector2.Distance(transform.position, this.patrolPoints[currStep]) < 0.001f)
+                    // If the patrol point is reached, set the next patrol point as target and calculate path towards it.
+                    if (this.aiLerp.targetReached)
                     {
-                        transform.position = this.patrolPoints[currStep];
+                        this.target.transform.position = this.patrolPoints[currStep];
                         currStep = (currStep + 1) % this.patrolPoints.Length;
-                        transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
+                        this.aiLerp.SearchPath();
                     }
                     break;
                 }
@@ -125,6 +134,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_KnockedOut");
         this.modus = GuardModus.KnockedOut;
+        this.aiLerp.enabled = false;
         this.SetCanBeKnockedOut(false);
         this.transform.GetChild((int)GuardRanges.View).gameObject.SetActive(false);
         this.transform.GetChild((int)GuardRanges.KnockOut).gameObject.SetActive(false);
