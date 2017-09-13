@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour{    
+public class Player : MonoBehaviour, IDamageable{    
 
     private float speed = 2.0f;
 
@@ -14,6 +14,12 @@ public class Player : MonoBehaviour{
 
     private Rigidbody2D rb;
 
+    private int health = 1;
+
+    private bool isDead = false;
+
+    private GUIGameStatus guiGameStatus;
+
     /// <summary>
     /// Use this for initialization
     /// </summary>
@@ -23,6 +29,7 @@ public class Player : MonoBehaviour{
         rb = GetComponent<Rigidbody2D>();
 
         this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
+        this.guiGameStatus = GameObject.Find("GameStatus").GetComponent<GUIGameStatus>();
     }
 
     /// <summary>
@@ -31,6 +38,21 @@ public class Player : MonoBehaviour{
     void Update () {
 
 	}
+
+    /// <summary>
+    /// Called when the Player takes a hit from a bullet fired by a Guard.
+    /// </summary>
+    /// <param name="damage">The amount of damage the bullet does.</param>
+    /// <param name="hit">Informtion about where the Player was hit.</param>
+    public void TakeHit(int damage, RaycastHit2D hit)
+    {
+        this.health -= damage;
+        if (this.health <= 0 && !isDead)
+        {
+            isDead = true;
+            this.guiGameStatus.SetGameStatus(GameStatus.Lost, true);
+        }
+    }
 
     /// <summary>
     /// Move the Player.

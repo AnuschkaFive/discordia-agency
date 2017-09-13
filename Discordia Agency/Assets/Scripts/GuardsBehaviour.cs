@@ -18,9 +18,10 @@ public class GuardsBehaviour : MonoBehaviour {
     // The speed with which the guard walks.
     public float speed;
 
-    //
+    // How much faster the Guard moves when in Seeking-Mode.
     public float seekingSpeedFactor;
 
+    // How much faster the Guard moves when in Hunting-Mode.
     public float huntingSpeedFactor;
 
     // The direction the guard is facing during every step of the patrol route. Angle in absolute degrees, 0° being up, 90° left, ...
@@ -56,18 +57,23 @@ public class GuardsBehaviour : MonoBehaviour {
 
     private GameObject target;
 
+    private Player player;
+
+    private LayerMask playerMask;
+
     /// <summary>
     /// Use this for initialization
     /// </summary>
     void Start () {
         this.currStep = 0;
-        this.transform.eulerAngles = new Vector3(0f, 0f, this.directions[currStep]);
         this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
         this.FOV = this.GetComponentInChildren<GuardsFOV>();
         this.gameStatus = GameObject.Find("GameStatus").gameObject;
         this.aiLerp = this.GetComponent<AILerp>();
         this.target = this.aiLerp.target.gameObject;
         this.seeker = this.GetComponent<Seeker>();
+        this.player = GameObject.Find("Player").GetComponent<Player>();
+        this.playerMask = LayerMask.GetMask("Player");
         // Set the Guard's target to the initial patrol point.
         this.SetPatrolling();
     }
@@ -249,21 +255,7 @@ public class GuardsBehaviour : MonoBehaviour {
         this.SetNewTarget(seekLocation);
         StartCoroutine(this.IsSeeking());
     }
-
-    /// <summary>
-    /// Set the Guard to be hunting after the Player.
-    /// </summary>
-    public void SetHunting(Vector2 playerLocation)
-    {
-        this.modus = GuardModus.Hunting;
-        this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
-        //this.SetNewTarget(playerLocation);
-        //StartCoroutine(this.ShootPlayer());
-        this.aiLerp.target = GameObject.Find("Player").transform;
-        this.aiLerp.SearchPath();
-        StartCoroutine(this.HuntPlayer());
-    }
-
+    
     private IEnumerator IsSeeking()
     {
         while (!this.aiLerp.targetReached)
@@ -278,9 +270,29 @@ public class GuardsBehaviour : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Set the Guard to be hunting after the Player.
+    /// </summary>
+    public void SetHunting(Vector2 playerLocation)
+    {
+        this.modus = GuardModus.Hunting;
+        this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
+        StartCoroutine(this.ShootPlayer());
+    }
+
+    // while no obstacle betweeen player & guard: shoot at player
+    // remember last position where no obstacle between player & guard
+    // move towards last seen position, check for player again
+
     private IEnumerator ShootPlayer()
     {
         yield return null;
+    }
+
+    private bool CanSeePlayer()
+    {
+        RaycastHit2D[] hit = new RaycastHit2D[1];
+        return Physics2D.RaycastNonAlloc(this.transform.position, this.player.transform.position - this.transform.position, hit, 10f, this.playerMask) == 1;
     }
 
     private IEnumerator HuntPlayer()
