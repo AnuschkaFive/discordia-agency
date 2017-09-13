@@ -30,6 +30,10 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
 
     private LayerMask obstacleMask;
 
+    private LayerMask guardMask;
+
+    private float listeningRadius = 10.0f;
+
 	// Use this for initialization
 	void Start () {
         this.player = this.gameObject.GetComponentInParent<Player>();
@@ -37,6 +41,7 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
         this.powerMeter = this.GetComponentInChildren<ThrowableObjectPowerMeter>();
         this.power = this.minPower;
         this.obstacleMask = LayerMask.GetMask("Obstacles");
+        this.guardMask = LayerMask.GetMask("Guards");
     }
 	
 	// Update is called once per frame
@@ -136,17 +141,35 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
     private IEnumerator MoveObject(Vector2 target)
     {
         Debug.Log("Objekt bewegst sich!");
+        this.transform.parent = null;
         while ((Vector2.Distance(this.transform.position, target) > 0.01f)) {
             this.transform.position = Vector2.MoveTowards(this.transform.position, target, Time.deltaTime);
             //Debug.Log("In Schleife");
             yield return null;
         }
         Debug.Log("Nach Schleife");
+        this.transform.parent = this.player.gameObject.transform;
         this.isFlying = false;
         this.player.ToggleHasThrowableObject();
         this.transform.localEulerAngles = new Vector2(1.0f, 0.0f);
         this.transform.localPosition = this.startPosition;
         yield return new WaitForSeconds(2);
+        this.CallGuards(this.listeningRadius);
         GameObject.Find("Object_01").gameObject.GetComponent<ThrowableObjectOnGround>().Spawn();        
+    }
+
+    /// <summary>
+    /// Call all Guards within the specified listening radius to the thrown object's target location.
+    /// </summary>
+    /// <param name="listeningRadius">The specified listening radius in which Guards are located.</param>
+    private void CallGuards(float listeningRadius)
+    {
+        GuardsBehaviour currentGuard;
+        Collider2D[] targetsInListeningRadius = Physics2D.OverlapCircleAll(this.transform.parent.position, listeningRadius, this.guardMask);
+        for (int i = 0; i < targetsInListeningRadius.Length; i++)
+        {
+            currentGuard = targetsInListeningRadius[i].gameObject.GetComponent<GuardsBehaviour>();
+            currentGuard.SetSeeking(this.targetPosition);
+        }
     }
 }

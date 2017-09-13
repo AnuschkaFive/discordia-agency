@@ -18,6 +18,11 @@ public class GuardsBehaviour : MonoBehaviour {
     // The speed with which the guard walks.
     public float speed;
 
+    //
+    public float seekingSpeedFactor;
+
+    public float huntingSpeedFactor;
+
     // The direction the guard is facing during every step of the patrol route. Angle in absolute degrees, 0° being up, 90° left, ...
     public float[] directions;
 
@@ -64,8 +69,7 @@ public class GuardsBehaviour : MonoBehaviour {
         this.target = this.aiLerp.target.gameObject;
         this.seeker = this.GetComponent<Seeker>();
         // Set the Guard's target to the initial patrol point.
-        this.target.transform.position = this.patrolPoints[currStep];
-        this.aiLerp.SearchPath();
+        this.SetPatrolling();
     }
 
     /// <summary>
@@ -79,9 +83,10 @@ public class GuardsBehaviour : MonoBehaviour {
                     // If the patrol point is reached, set the next patrol point as target and calculate path towards it.
                     if (this.aiLerp.targetReached)
                     {
-                        this.target.transform.position = this.patrolPoints[currStep];
+                        Debug.Log("Patrolling-Target reached!");
                         currStep = (currStep + 1) % this.patrolPoints.Length;
-                        this.aiLerp.SearchPath();
+                        Debug.Log("curStep: " + currStep);
+                        this.SetNewTarget(this.patrolPoints[currStep]);
                     }
                     break;
                 }
@@ -115,7 +120,8 @@ public class GuardsBehaviour : MonoBehaviour {
         }
         if (this.FOV.visiblePlayers.Count > 0)
         {
-            this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
+            //this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
+            this.SetHunting(this.FOV.visiblePlayers[0].position);
         }
         foreach (Transform guard in this.FOV.visibleGuards)
         {
@@ -210,5 +216,79 @@ public class GuardsBehaviour : MonoBehaviour {
         this.canBeDragged = canBeDragged;
         this.guiPlayerControl.GetComponent<GUIPlayerControl>().SetControlStatus(Controls.Drag, canBeDragged);
         Debug.Log("canBeDragged: " + canBeDragged);
+    }
+
+    /// <summary>
+    /// Sets the Guard on a new path.
+    /// </summary>
+    /// <param name="newTarget">New target for the Guard.</param>
+    private void SetNewTarget(Vector2 newTarget)
+    {
+        this.target.transform.position = newTarget;
+        this.aiLerp.SearchPath();
+    }
+
+    /// <summary>
+    /// Sets the Guard to be patrolling.
+    /// </summary>
+    public void SetPatrolling()
+    {
+        this.modus = GuardModus.Patrolling;
+        this.aiLerp.speed = this.speed;
+        this.SetNewTarget(this.patrolPoints[currStep]);
+    }
+
+    /// <summary>
+    /// Sets the Guard to be seeking at a specified location.
+    /// </summary>
+    /// <param name="seekLocation">The location the Guard should move to and search at.</param>
+    public void SetSeeking(Vector2 seekLocation)
+    {
+        this.modus = GuardModus.Seeking;
+        this.aiLerp.speed = this.speed * this.seekingSpeedFactor;
+        this.SetNewTarget(seekLocation);
+        StartCoroutine(this.IsSeeking());
+    }
+
+    /// <summary>
+    /// Set the Guard to be hunting after the Player.
+    /// </summary>
+    public void SetHunting(Vector2 playerLocation)
+    {
+        this.modus = GuardModus.Hunting;
+        this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
+        //this.SetNewTarget(playerLocation);
+        //StartCoroutine(this.ShootPlayer());
+        this.aiLerp.target = GameObject.Find("Player").transform;
+        this.aiLerp.SearchPath();
+        StartCoroutine(this.HuntPlayer());
+    }
+
+    private IEnumerator IsSeeking()
+    {
+        while (!this.aiLerp.targetReached)
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(4); // TODO: Co-Routine that makes the Guard rotate slightly.
+        // If the Guard is still in Seeking mode, meaning: hasn't spotted the player: return to Patrolling.
+        if (this.modus == GuardModus.Seeking)
+        {
+            this.SetPatrolling();
+        }
+    }
+
+    private IEnumerator ShootPlayer()
+    {
+        yield return null;
+    }
+
+    private IEnumerator HuntPlayer()
+    {
+        while(!this.aiLerp.targetReached)
+        {
+            yield return null;
+        }
+        this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
     }
 }

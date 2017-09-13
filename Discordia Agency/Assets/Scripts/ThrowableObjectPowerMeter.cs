@@ -25,6 +25,7 @@ public class ThrowableObjectPowerMeter : MonoBehaviour {
 
     public void updatePowerMeter(float percentage)
     {
+        Debug.Log("PowerMeter is being updated: " + calcScaling(percentage));
         this.transform.localScale = calcScaling(percentage);
     }
 
