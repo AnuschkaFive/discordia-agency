@@ -6,4 +6,6 @@
 public interface IDamageable
 {
     void TakeHit(int damage, RaycastHit2D hit);
+
+    bool IsPlayer();
 }

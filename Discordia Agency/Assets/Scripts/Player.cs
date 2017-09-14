@@ -54,6 +54,11 @@ public class Player : MonoBehaviour, IDamageable{
         }
     }
 
+    public bool IsPlayer()
+    {
+        return true;
+    }
+
     /// <summary>
     /// Move the Player.
     /// </summary>

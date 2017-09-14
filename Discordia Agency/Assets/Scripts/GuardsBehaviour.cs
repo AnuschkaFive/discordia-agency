@@ -18,20 +18,22 @@ public class GuardsBehaviour : MonoBehaviour {
     // The speed with which the guard walks.
     public float speed;
 
+    public float rotationSpeed;
+
     // How much faster the Guard moves when in Seeking-Mode.
     public float seekingSpeedFactor;
 
     // How much faster the Guard moves when in Hunting-Mode.
-    public float huntingSpeedFactor;
-
-    // The direction the guard is facing during every step of the patrol route. Angle in absolute degrees, 0° being up, 90° left, ...
-    public float[] directions;
+    public float huntingSpeedFactor;    
 
     // The patrol points the guard continuously follows while Patrolling.
     public Vector2[] patrolPoints;
 
     // The modus the guard is currently in.
     public GuardModus modus;
+
+    // Whether the Guard is stationary or not.
+    public bool isStationary;
 
     // Whether the Guard can currently be knocked out, because Player is close enough from behind.
     private bool canBeKnockedOut;
@@ -59,7 +61,11 @@ public class GuardsBehaviour : MonoBehaviour {
 
     private Player player;
 
-    private LayerMask playerMask;
+    private LayerMask collisionMask;
+
+    private Gun gun;
+
+    private Transform lastKnownPlayerPosition;
 
     /// <summary>
     /// Use this for initialization
@@ -73,7 +79,8 @@ public class GuardsBehaviour : MonoBehaviour {
         this.target = this.aiLerp.target.gameObject;
         this.seeker = this.GetComponent<Seeker>();
         this.player = GameObject.Find("Player").GetComponent<Player>();
-        this.playerMask = LayerMask.GetMask("Player");
+        this.collisionMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Obstacles"));
+        this.gun = this.GetComponentInChildren<Gun>();
         // Set the Guard's target to the initial patrol point.
         this.SetPatrolling();
     }
@@ -231,6 +238,8 @@ public class GuardsBehaviour : MonoBehaviour {
     private void SetNewTarget(Vector2 newTarget)
     {
         this.target.transform.position = newTarget;
+        this.aiLerp.canSearch = true;
+        this.aiLerp.canMove = true;
         this.aiLerp.SearchPath();
     }
 
@@ -241,6 +250,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.modus = GuardModus.Patrolling;
         this.aiLerp.speed = this.speed;
+        this.aiLerp.rotationSpeed = this.rotationSpeed;
         this.SetNewTarget(this.patrolPoints[currStep]);
     }
 
@@ -252,6 +262,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.modus = GuardModus.Seeking;
         this.aiLerp.speed = this.speed * this.seekingSpeedFactor;
+        this.aiLerp.rotationSpeed = this.rotationSpeed * this.seekingSpeedFactor;
         this.SetNewTarget(seekLocation);
         StartCoroutine(this.IsSeeking());
     }
@@ -262,6 +273,8 @@ public class GuardsBehaviour : MonoBehaviour {
         {
             yield return null;
         }
+        this.aiLerp.canMove = false;
+        this.aiLerp.canSearch = false;
         yield return new WaitForSeconds(4); // TODO: Co-Routine that makes the Guard rotate slightly.
         // If the Guard is still in Seeking mode, meaning: hasn't spotted the player: return to Patrolling.
         if (this.modus == GuardModus.Seeking)
@@ -277,30 +290,66 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.modus = GuardModus.Hunting;
         this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
-        StartCoroutine(this.ShootPlayer());
+        this.aiLerp.rotationSpeed = this.rotationSpeed * this.huntingSpeedFactor;
+        this.aiLerp.target = this.player.transform;      
+        StartCoroutine(this.HuntPlayer());
     }
 
-    // while no obstacle betweeen player & guard: shoot at player
-    // remember last position where no obstacle between player & guard
-    // move towards last seen position, check for player again
-
-    private IEnumerator ShootPlayer()
+    /// <summary>
+    /// Shoot the Player, when line of sight to him. Otherwise, run shortest path towards him.
+    /// </summary>
+    /// <returns>Wait</returns>
+    private IEnumerator HuntPlayer()
     {
-        yield return null;
+        while (true)
+        {
+            this.aiLerp.canMove = false;
+            this.aiLerp.canSearch = false;
+            while (this.CanSeePlayer())
+            {
+                this.RotateTowards(this.lastKnownPlayerPosition.position);
+                this.gun.Shoot();
+                yield return null;
+            }
+            this.aiLerp.canSearch = true;
+            this.aiLerp.canMove = true;
+            this.aiLerp.SearchPath();
+            while (!this.CanSeePlayer())
+            {
+                yield return null;
+            }
+            yield return null;
+        }
     }
 
+    /// <summary>
+    /// Check whether there is a line of sight to the Player.
+    /// </summary>
+    /// <returns>True, if there is a line of sight to the Player. False, otherwise.</returns>
     private bool CanSeePlayer()
     {
         RaycastHit2D[] hit = new RaycastHit2D[1];
-        return Physics2D.RaycastNonAlloc(this.transform.position, this.player.transform.position - this.transform.position, hit, 10f, this.playerMask) == 1;
-    }
-
-    private IEnumerator HuntPlayer()
-    {
-        while(!this.aiLerp.targetReached)
+        bool foundPlayer = 
+            (Physics2D.RaycastNonAlloc(this.transform.position, this.player.transform.position - this.transform.position, hit, 10f, this.collisionMask) == 1) && 
+            hit[0].collider.GetComponent<IDamageable>() != null &&
+            hit[0].collider.GetComponent<IDamageable>().IsPlayer();
+        if(foundPlayer)
         {
-            yield return null;
+            this.lastKnownPlayerPosition = hit[0].transform;
         }
-        this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
+        return foundPlayer;
+    }
+    
+    /// <summary>
+    /// Rotate towards a target position.
+    /// </summary>
+    /// <param name="target">The target to rotate towards.</param>
+    private void RotateTowards(Vector2 target)
+    {
+        Vector2 direction = target - (Vector2)this.transform.position;
+        float angle = Mathf.Atan2(direction.x, -direction.y) * Mathf.Rad2Deg + 180;
+        Vector3 euler = this.transform.eulerAngles;
+        euler.z = Mathf.LerpAngle(euler.z, angle, Time.deltaTime * this.aiLerp.rotationSpeed);
+        this.transform.eulerAngles = euler;
     }
 }

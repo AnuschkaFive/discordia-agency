@@ -18,11 +18,6 @@ public class Gun : MonoBehaviour {
     // Delay until the next Bullet is fired; depending on msBetweenShots.
     private float nextShotTime;
 
-    private void Update()
-    {
-        this.Shoot();
-    }
-
     /// <summary>
     /// Shoots a Bullet from the Gun.
     /// </summary>
