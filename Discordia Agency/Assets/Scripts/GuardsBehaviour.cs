@@ -170,7 +170,7 @@ public class GuardsBehaviour : MonoBehaviour {
         {
             if(guard.GetComponent<GuardsBehaviour>().modus == GuardModus.KnockedOut)
             {
-                Debug.Log("Found knocked out Guard!");
+                this.AlertAllGuards();
             }
         }
     }

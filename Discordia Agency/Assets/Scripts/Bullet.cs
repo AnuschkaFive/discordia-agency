@@ -10,7 +10,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour {
 
     // The movement speed of the Bullet.
-    float speed = 10;
+    float speed = 50;
 
     // The layers the Bullet can collide with.
     private LayerMask collisionMask;

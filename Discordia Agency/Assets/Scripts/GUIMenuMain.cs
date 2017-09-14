@@ -17,7 +17,7 @@ public class GUIMenuMain : MonoBehaviour {
     void ClickStart()
     {
         Debug.Log("Level startet!");
-        SceneManager.LoadScene("Level01");
+        SceneManager.LoadScene("Level_01");
     }
 
     void ClickExit()

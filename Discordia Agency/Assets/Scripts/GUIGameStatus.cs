@@ -53,7 +53,8 @@ public class GUIGameStatus : MonoBehaviour {
 
         if(this.gameStatus == GameStatus.Won && Input.GetButtonDown("NextLevel"))
         {
-            Debug.Log("Next Level is starting.");
+            Debug.Log("Load next level: " + this.currentLevel.buildIndex);
+            SceneManager.LoadScene((this.currentLevel.buildIndex + 1) % 7);
             Time.timeScale = 1.0f;
         }
 	}
