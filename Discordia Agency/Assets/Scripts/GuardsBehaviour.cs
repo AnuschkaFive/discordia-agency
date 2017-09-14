@@ -35,6 +35,9 @@ public class GuardsBehaviour : MonoBehaviour {
     // Whether the Guard is stationary or not.
     public bool isStationary;
 
+    // The direction the Guard is looking when stationary, in degrees.
+    public float stationaryLookDirection;
+
     // Whether the Guard can currently be knocked out, because Player is close enough from behind.
     private bool canBeKnockedOut;
 
@@ -46,6 +49,8 @@ public class GuardsBehaviour : MonoBehaviour {
 
     // Whether the Guard is currently being dragged.
     private bool isBeingDragged;
+
+    private bool isAlerted = false;
 
     private GameObject guiPlayerControl;
 
@@ -82,7 +87,16 @@ public class GuardsBehaviour : MonoBehaviour {
         this.collisionMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Obstacles"));
         this.gun = this.GetComponentInChildren<Gun>();
         // Set the Guard's target to the initial patrol point.
-        this.SetPatrolling();
+        if (!this.isStationary)
+        {
+            this.SetPatrolling();
+        }
+        else
+        {
+            this.aiLerp.canMove = false;
+            this.aiLerp.canSearch = false;
+            this.transform.eulerAngles = new Vector3(0f, 0f, this.stationaryLookDirection);
+        }
     }
 
     /// <summary>
@@ -93,16 +107,32 @@ public class GuardsBehaviour : MonoBehaviour {
         {
             case GuardModus.Patrolling:
                 {
-                    // If the patrol point is reached, set the next patrol point as target and calculate path towards it.
-                    if (this.aiLerp.targetReached)
+                    if (!isStationary)
                     {
-                        Debug.Log("Patrolling-Target reached!");
-                        currStep = (currStep + 1) % this.patrolPoints.Length;
-                        Debug.Log("curStep: " + currStep);
-                        this.SetNewTarget(this.patrolPoints[currStep]);
+                        // If the patrol point is reached, set the next patrol point as target and calculate path towards it.
+                        if (this.aiLerp.targetReached)
+                        {
+                            Debug.Log("Patrolling-Target reached!");
+                            currStep = (currStep + 1) % this.patrolPoints.Length;
+                            Debug.Log("curStep: " + currStep);
+                            this.SetNewTarget(this.patrolPoints[currStep]);
+                        }
                     }
-                    break;
-                }
+                    else
+                    {
+                        if (Vector2.Distance((Vector2)this.transform.position, this.patrolPoints[0]) < 0.1f)
+                        {
+                            Debug.Log("Stationary Guard is back home!");
+                            this.aiLerp.canSearch = false;
+                            this.aiLerp.canMove = false;
+                            this.transform.position = this.patrolPoints[0];
+                            this.transform.eulerAngles = new Vector3(0f, 0f, this.stationaryLookDirection);
+                        }
+                    }
+                          
+                 
+                 break;
+             }
         }
     }
 
@@ -244,7 +274,7 @@ public class GuardsBehaviour : MonoBehaviour {
     }
 
     /// <summary>
-    /// Sets the Guard to be patrolling.
+    /// Sets the Guard to be patrolling. Stationary Guards go to their stationary spot, face the correct direction and stop.
     /// </summary>
     public void SetPatrolling()
     {
@@ -252,6 +282,7 @@ public class GuardsBehaviour : MonoBehaviour {
         this.aiLerp.speed = this.speed;
         this.aiLerp.rotationSpeed = this.rotationSpeed;
         this.SetNewTarget(this.patrolPoints[currStep]);
+        
     }
 
     /// <summary>
@@ -284,14 +315,15 @@ public class GuardsBehaviour : MonoBehaviour {
     }
 
     /// <summary>
-    /// Set the Guard to be hunting after the Player.
+    /// Set the Guard to be hunting after the Player. Also alerts all other Guards.
     /// </summary>
     public void SetHunting(Vector2 playerLocation)
     {
         this.modus = GuardModus.Hunting;
         this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
         this.aiLerp.rotationSpeed = this.rotationSpeed * this.huntingSpeedFactor;
-        this.aiLerp.target = this.player.transform;      
+        this.aiLerp.target = this.player.transform;
+        this.AlertAllGuards();     
         StartCoroutine(this.HuntPlayer());
     }
 
@@ -351,5 +383,26 @@ public class GuardsBehaviour : MonoBehaviour {
         Vector3 euler = this.transform.eulerAngles;
         euler.z = Mathf.LerpAngle(euler.z, angle, Time.deltaTime * this.aiLerp.rotationSpeed);
         this.transform.eulerAngles = euler;
+    }
+
+    /// <summary>
+    /// Sets the Guard to be alerted, which increases his FOV.
+    /// </summary>
+    public void SetAlerted()
+    {
+        this.isAlerted = true;
+        this.FOV.SetAlertedFOV();
+    }
+
+    /// <summary>
+    /// Sets all Guards to be alerted, which increases their FOV.
+    /// </summary>
+    public void AlertAllGuards()
+    {
+        GuardsBehaviour[] allGuards = this.transform.parent.GetComponentsInChildren<GuardsBehaviour>();
+        foreach(GuardsBehaviour guard in allGuards)
+        {
+            guard.SetAlerted();
+        }
     }
 }

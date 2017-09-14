@@ -11,7 +11,10 @@ public class GuardsFOV : MonoBehaviour {
     [Range(0, 10)]
     public float viewRadius;
     [Range(0, 1)]
-    public float reducedViewRadius; 
+    public float reducedViewRadius;
+
+    [Range(1, 3)]
+    public float alertnessFactor;
 
     public float meshResolution;
     public int edgeResolveIterations;
@@ -56,6 +59,15 @@ public class GuardsFOV : MonoBehaviour {
         this.UpdateVisibleTargets();
         this.UpdateFieldsOfView();
 	}
+
+    /// <summary>
+    /// Increase the view radius by a specific factor.
+    /// </summary>
+    public void SetAlertedFOV()
+    {
+        this.viewRadius *= this.alertnessFactor;
+        this.reducedViewRadius *= this.alertnessFactor;
+    }
 
     /// <summary>
     /// Updates the list of visible Players (with different radius, depending on whether they are disguised or not)
