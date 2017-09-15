@@ -7,12 +7,14 @@ public class ThrowableObjectOnGround : MonoBehaviour
     private GameObject guiPlayerControl;
     private GameObject player;
     private bool canBePickedUp;
+    private AudioSource audioSource;
 
     // Use this for initialization
     void Start()
     {
         this.guiPlayerControl = GameObject.Find("Canvas_GUIPlayerControl").gameObject;
         this.player = GameObject.Find("Player").gameObject;
+        this.audioSource = this.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -21,6 +23,7 @@ public class ThrowableObjectOnGround : MonoBehaviour
         if(this.canBePickedUp && Input.GetButton("PickUp"))
         {
             this.player.GetComponent<Player>().ToggleHasThrowableObject();
+            this.audioSource.Play();
             this.Despawn();
         }
     }

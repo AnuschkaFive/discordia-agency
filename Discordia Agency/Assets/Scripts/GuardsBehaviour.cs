@@ -72,6 +72,8 @@ public class GuardsBehaviour : MonoBehaviour {
 
     private Transform lastKnownPlayerPosition;
 
+    private SoundEffect soundEffect;
+
     /// <summary>
     /// Use this for initialization
     /// </summary>
@@ -86,6 +88,7 @@ public class GuardsBehaviour : MonoBehaviour {
         this.player = GameObject.Find("Player").GetComponent<Player>();
         this.collisionMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Obstacles"));
         this.gun = this.GetComponentInChildren<Gun>();
+        this.soundEffect = this.GetComponent<SoundEffect>();
         // Set the Guard's target to the initial patrol point.
         if (!this.isStationary)
         {
@@ -122,7 +125,7 @@ public class GuardsBehaviour : MonoBehaviour {
                     {
                         if (Vector2.Distance((Vector2)this.transform.position, this.patrolPoints[0]) < 0.1f)
                         {
-                            Debug.Log("Stationary Guard is back home!");
+                            //Debug.Log("Stationary Guard is back home!");
                             this.aiLerp.canSearch = false;
                             this.aiLerp.canMove = false;
                             this.transform.position = this.patrolPoints[0];
@@ -183,6 +186,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_KnockedOut");
         this.modus = GuardModus.KnockedOut;
+        this.soundEffect.PlaySoundEffect(0);
         this.aiLerp.enabled = false;
         this.SetCanBeKnockedOut(false);
         this.transform.GetChild((int)GuardRanges.View).gameObject.SetActive(false);
@@ -209,6 +213,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(false);
         this.SetCanBeDisguised(false);
+        this.soundEffect.PlaySoundEffect(1);
         GameObject.Find("Player").gameObject.GetComponent<Player>().ToggleDisguise();
     }
 
@@ -292,12 +297,15 @@ public class GuardsBehaviour : MonoBehaviour {
     /// <param name="seekLocation">The location the Guard should move to and search at.</param>
     public void SetSeeking(Vector2 seekLocation)
     {
-        this.modus = GuardModus.Seeking;
-        this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Curious");
-        this.aiLerp.speed = this.speed * this.seekingSpeedFactor;
-        this.aiLerp.rotationSpeed = this.rotationSpeed * this.seekingSpeedFactor;
-        this.SetNewTarget(seekLocation);
-        StartCoroutine(this.IsSeeking());
+        if (this.modus != GuardModus.Seeking)
+        {
+            this.modus = GuardModus.Seeking;
+            this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Curious");
+            this.aiLerp.speed = this.speed * this.seekingSpeedFactor;
+            this.aiLerp.rotationSpeed = this.rotationSpeed * this.seekingSpeedFactor;
+            this.SetNewTarget(seekLocation);
+            StartCoroutine(this.IsSeeking());
+        }
     }
     
     private IEnumerator IsSeeking()
@@ -326,13 +334,22 @@ public class GuardsBehaviour : MonoBehaviour {
     /// </summary>
     public void SetHunting(Vector2 playerLocation)
     {
-        this.modus = GuardModus.Hunting;
-        this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Hunting");
-        this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
-        this.aiLerp.rotationSpeed = this.rotationSpeed * this.huntingSpeedFactor;
-        this.aiLerp.target = this.player.transform;
-        this.AlertAllGuards();     
-        StartCoroutine(this.HuntPlayer());
+        if (this.modus != GuardModus.Hunting)
+        {
+            this.modus = GuardModus.Hunting;
+            if (!this.gameStatus.GetComponent<GUIGameStatus>().playerIsBeingHunted)
+            {
+                this.soundEffect.PlaySoundEffect(2);
+            }
+            this.gameStatus.GetComponent<GUIGameStatus>().SetSoundtrackToHunting();
+            this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Hunting");
+            
+            this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
+            this.aiLerp.rotationSpeed = this.rotationSpeed * this.huntingSpeedFactor;
+            this.aiLerp.target = this.player.transform;
+            this.AlertAllGuards();
+            StartCoroutine(this.HuntPlayer());
+        }
     }
 
     /// <summary>
@@ -398,7 +415,7 @@ public class GuardsBehaviour : MonoBehaviour {
     /// </summary>
     public void SetAlerted()
     {
-        if (this.modus != GuardModus.Hunting)
+        if (this.modus != GuardModus.Hunting && this.modus != GuardModus.KnockedOut)
         {
             this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Curious");
         }

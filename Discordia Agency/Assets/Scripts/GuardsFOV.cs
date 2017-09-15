@@ -24,6 +24,7 @@ public class GuardsFOV : MonoBehaviour {
     private Mesh viewMeshRegular;
     public MeshFilter viewMeshFilterReduced;
     private Mesh viewMeshReduced;
+    private MeshRenderer viewMeshRendererRegular;
 
     private LayerMask playerMask;
     private LayerMask obstacleMask;
@@ -50,6 +51,7 @@ public class GuardsFOV : MonoBehaviour {
         this.viewMeshReduced = new Mesh();
         this.viewMeshReduced.name = "ViewMeshReduced";
         this.viewMeshFilterReduced.mesh = viewMeshReduced;
+        this.viewMeshRendererRegular = this.GetComponentsInChildren<MeshRenderer>(true)[0];
     }
 	
 	/// <summary>
@@ -89,6 +91,7 @@ public class GuardsFOV : MonoBehaviour {
         this.DrawFieldOfFiew(this.viewMeshRegular, this.viewRadius);
         if (this.player.GetComponent<Player>().isDisguised)
         {
+            this.viewMeshRendererRegular.material = Resources.Load<Material>("Materials/Sprite-FOV-Disguised");
             this.DrawFieldOfFiew(this.viewMeshReduced, this.viewRadius * this.reducedViewRadius);
         }
     }

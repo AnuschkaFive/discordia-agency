@@ -1,0 +1,450 @@
+Initialize engine version: 2017.1.0f3 (472613c02cf7)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce GTX 1060 (ID=0x1c60)
+    Vendor:   NVIDIA
+    VRAM:     6046 MB
+    Driver:   22.21.13.8541
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.Timeline.dll (this message is harmless)
+Loading D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.Timeline.dll into Unity Child Domain
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\Pathfinding.Ionic.Zip.Reduced.dll (this message is harmless)
+Loading D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\Pathfinding.Ionic.Zip.Reduced.dll into Unity Child Domain
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\System.dll (this message is harmless)
+Platform assembly: D:\annaf\Documents\Discordia Agency\discordia-agency\Development_Testing\DiscordiaAgency_Demo_2017_09_16_Data\Managed\System.Core.dll (this message is harmless)
+- Completed reload, in  0.017 seconds
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 0.989630 ms
+Level startet!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.199114 ms
+Scanning - Process took 20 ms to complete
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+
+Unloading 8 unused Assets to reduce memory usage. Loaded Objects now: 689.
+Total: 3.305879 ms (FindLiveObjects: 0.075851 ms CreateObjectMapping: 0.060839 ms MarkObjects: 2.133335 ms  DeleteObjects: 1.035062 ms)
+
+Gun
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Canceled path because a new one was requested.
+This happens when a new path is requested from the seeker when one was already being calculated.
+For example if a unit got a new order, you might request a new path directly instead of waiting for the now invalid path to be calculated. Which is probably what you want.
+If you are getting this a lot, you might want to consider how you are scheduling path requests.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gun
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Canceled path because a new one was requested.
+This happens when a new path is requested from the seeker when one was already being calculated.
+For example if a unit got a new order, you might request a new path directly instead of waiting for the now invalid path to be calculated. Which is probably what you want.
+If you are getting this a lot, you might want to consider how you are scheduling path requests.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gun
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Canceled path because a new one was requested.
+This happens when a new path is requested from the seeker when one was already being calculated.
+For example if a unit got a new order, you might request a new path directly instead of waiting for the now invalid path to be calculated. Which is probably what you want.
+If you are getting this a lot, you might want to consider how you are scheduling path requests.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Failed : Computation Time 0.00 ms Searched Nodes 0
+Error: Canceled path because a new one was requested.
+This happens when a new path is requested from the seeker when one was already being calculated.
+For example if a unit got a new order, you might request a new path directly instead of waiting for the now invalid path to be calculated. Which is probably what you want.
+If you are getting this a lot, you might want to consider how you are scheduling path requests.
+Path Number 1 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 2.04 ms Searched Nodes 301 Path Length 92
+Path Number 2 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Failed : Computation Time 0.00 ms Searched Nodes 0
+Error: Canceled path because a new one was requested.
+This happens when a new path is requested from the seeker when one was already being calculated.
+For example if a unit got a new order, you might request a new path directly instead of waiting for the now invalid path to be calculated. Which is probably what you want.
+If you are getting this a lot, you might want to consider how you are scheduling path requests.
+Path Number 3 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 0 Path Length 1
+Path Number 4 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Failed : Computation Time 0.00 ms Searched Nodes 0
+Error: Canceled path because a new one was requested.
+This happens when a new path is requested from the seeker when one was already being calculated.
+For example if a unit got a new order, you might request a new path directly instead of waiting for the now invalid path to be calculated. Which is probably what you want.
+If you are getting this a lot, you might want to consider how you are scheduling path requests.
+Path Number 5 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 372 Path Length 92
+Path Number 6 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Patrolling-Target reached!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+curStep: 1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 89 Path Length 32
+Path Number 7 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 286 Path Length 87
+Path Number 8 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 352 Path Length 87
+Path Number 9 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 71 Path Length 26
+Path Number 10 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.50 ms Searched Nodes 271 Path Length 82
+Path Number 11 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 332 Path Length 82
+Path Number 12 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 56 Path Length 21
+Path Number 13 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 256 Path Length 77
+Path Number 14 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.49 ms Searched Nodes 312 Path Length 77
+Path Number 15 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 41 Path Length 16
+Path Number 16 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 241 Path Length 72
+Path Number 17 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 292 Path Length 72
+Path Number 18 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 26 Path Length 11
+Path Number 19 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 226 Path Length 67
+Path Number 20 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 272 Path Length 67
+Path Number 21 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 11 Path Length 6
+Path Number 22 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 211 Path Length 62
+Path Number 23 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 252 Path Length 62
+Path Number 24 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Patrolling-Target reached!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+curStep: 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 89 Path Length 32
+Path Number 25 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 193 Path Length 56
+Path Number 26 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.49 ms Searched Nodes 227 Path Length 56
+Path Number 27 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 71 Path Length 26
+Path Number 28 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.50 ms Searched Nodes 170 Path Length 51
+Path Number 29 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 202 Path Length 51
+Path Number 30 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 56 Path Length 21
+Path Number 31 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 145 Path Length 46
+Path Number 32 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 177 Path Length 46
+Path Number 33 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 41 Path Length 16
+Path Number 34 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+canBeKnockedOut: True
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 120 Path Length 41
+Path Number 35 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 152 Path Length 41
+Path Number 36 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Soundeffect is played!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+canBeKnockedOut: False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+canBeKnockedOut: False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+isKnockedOut
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+canBeDragged: True
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+canBeDisguised: True
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 26 Path Length 11
+Path Number 37 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 116 Path Length 40
+Path Number 38 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 130 Path Length 36
+Path Number 39 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 11 Path Length 6
+Path Number 40 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 110 Path Length 31
+Path Number 41 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 0 Path Length 1
+Path Number 42 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Patrolling-Target reached!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+curStep: 1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 89 Path Length 32
+Path Number 43 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 90 Path Length 26
+Path Number 44 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+canBeDragged: False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+canBeDisguised: False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 71 Path Length 26
+Path Number 45 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 70 Path Length 21
+Path Number 46 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 56 Path Length 21
+Path Number 47 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 50 Path Length 16
+Path Number 48 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 41 Path Length 16
+Path Number 49 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 30 Path Length 11
+Path Number 50 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 26 Path Length 11
+Path Number 51 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 14 Path Length 6
+Path Number 52 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 11 Path Length 6
+Path Number 53 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Patrolling-Target reached!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+curStep: 1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.50 ms Searched Nodes 372 Path Length 92
+Path Number 54 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 0 Path Length 1
+Path Number 55 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Patrolling-Target reached!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+curStep: 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Path Completed : Computation Time 0.00 ms Searched Nodes 89 Path Length 32
+Path Number 56 (unique id)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 1f6c -> priority: 1 
+  Thread -> id: 3250 -> priority: 1 
+  Thread -> id: 2e68 -> priority: 1 
+  Thread -> id: 37cc -> priority: 1 

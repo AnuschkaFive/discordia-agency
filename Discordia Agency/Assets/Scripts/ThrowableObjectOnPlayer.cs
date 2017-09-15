@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ThrowableObjectOnPlayer : MonoBehaviour {
 
+    private float maxScalingFactor = 0.6f;
+
     private float minPower = 0.1f;
 
     private float maxPower = 5f;
@@ -11,6 +13,8 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
     private float powerChangeSpeed = 0.08f;
 
     private float power;
+
+    private float throwingSpeed = 2.0f;
 
     private float rotationSpeed = 100f;
 
@@ -26,6 +30,10 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
 
     private Vector2 startPosition;
 
+    private Vector2 startPositionOnPlayer;
+
+    private Vector2 startScaling;
+
     private Vector2 targetPosition;
 
     private LayerMask obstacleMask;
@@ -34,14 +42,18 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
 
     private float listeningRadius = 10.0f;
 
+    private SoundEffect soundEffect;
+
 	// Use this for initialization
 	void Start () {
         this.player = this.gameObject.GetComponentInParent<Player>();
-        startPosition = this.transform.localPosition;
+        this.startPositionOnPlayer = this.transform.localPosition;
+        this.startScaling = this.transform.localScale;
         this.powerMeter = this.GetComponentInChildren<ThrowableObjectPowerMeter>();
         this.power = this.minPower;
         this.obstacleMask = LayerMask.GetMask("Obstacles");
         this.guardMask = LayerMask.GetMask("Guards");
+        this.soundEffect = this.GetComponent<SoundEffect>();
     }
 	
 	// Update is called once per frame
@@ -117,18 +129,21 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
     private void Throw()
     {
         this.isFlying = true;
+        this.soundEffect.PlaySoundEffect(0);
         this.targetPosition = this.player.transform.position + Vector3.Normalize(this.transform.position - this.player.transform.position) * this.power;
         Debug.Log("Player Pos: " + this.player.transform.position);
         Debug.Log("Objekt Pos: " + this.transform.position);
         Debug.Log("Objekt Target: " + this.targetPosition);
+        Vector2 impactPosition = this.targetPosition;
 
         // Check if there is an Obstacle (= a wall) in the way.
         RaycastHit2D[] hits = new RaycastHit2D[1];        
         if(Physics2D.RaycastNonAlloc(this.transform.position, this.targetPosition - (Vector2)this.transform.position, hits, Vector2.Distance(this.transform.position, this.targetPosition), this.obstacleMask) > 0 )
         {
-            this.targetPosition = hits[0].point;
+            impactPosition = hits[0].point;
         }
-        StartCoroutine(this.MoveObject(this.targetPosition));       
+        this.startPosition = this.transform.position;
+        StartCoroutine(this.MoveObject(this.targetPosition, impactPosition));       
     }
 
     /// <summary>
@@ -136,25 +151,43 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
     /// Afterwards, returns the object itself to its original location on the Player body, so that it is ready for the next throw,
     /// and hides it again, so that the Player needs to pick up another one.
     /// </summary>
-    /// <param name="target">Target location of the throw.</param>
+    /// <param name="originalTarget">How far the object would fly, based on the power. Doesn't include walls or obstacles.</param>
+    /// <param name="impact">Target location of the throw, including obstacles.</param>
     /// <returns>Loop</returns>
-    private IEnumerator MoveObject(Vector2 target)
+    private IEnumerator MoveObject(Vector2 originalTarget, Vector2 impact)
     {
-        Debug.Log("Objekt bewegst sich!");
         this.transform.parent = null;
-        while ((Vector2.Distance(this.transform.position, target) > 0.01f)) {
-            this.transform.position = Vector2.MoveTowards(this.transform.position, target, Time.deltaTime);
-            //Debug.Log("In Schleife");
+        Vector2 globalStartScale = this.transform.lossyScale;
+        while ((Vector2.Distance(this.transform.position, impact) > 0.01f)) {
+            this.transform.position = Vector2.MoveTowards(this.transform.position, impact, this.throwingSpeed * Time.deltaTime);
+            this.transform.localScale = this.CalculateNewScaling(this.transform.position, this.startPosition, originalTarget, globalStartScale, this.maxScalingFactor);
             yield return null;
         }
-        Debug.Log("Nach Schleife");
+        this.soundEffect.PlaySoundEffect(1);
         this.transform.parent = this.player.gameObject.transform;
         this.isFlying = false;
         this.player.ToggleHasThrowableObject();
         this.transform.localEulerAngles = new Vector2(1.0f, 0.0f);
-        this.transform.localPosition = this.startPosition;
+        this.transform.localPosition = this.startPositionOnPlayer;
+        this.transform.localScale = this.startScaling;
         this.CallGuards(this.listeningRadius);
-        GameObject.Find("Object_01").gameObject.GetComponent<ThrowableObjectOnGround>().Spawn();        
+        ThrowableObjectOnGround[] allObjects = GameObject.Find("Objects").gameObject.GetComponentsInChildren<ThrowableObjectOnGround>();
+        foreach(ThrowableObjectOnGround objectOnGround in allObjects)
+        {
+            objectOnGround.Spawn();
+        }       
+    }
+
+    private Vector2 CalculateNewScaling(Vector2 currentPosition, Vector2 startPosition, Vector2 targetPosition, Vector2 startScaling, float maxScalingFactor)
+    {
+        float distanceFromStart = Vector2.Distance(startPosition, currentPosition);
+        float distanceBetweenStartAndTarget = Vector2.Distance(startPosition, targetPosition);
+        float percentageTravelled = distanceFromStart * 2.0f / distanceBetweenStartAndTarget;
+        if(percentageTravelled > 1.0f)
+        {
+            percentageTravelled = 2.0f - percentageTravelled;
+        }
+        return startScaling * (1.0f + maxScalingFactor * percentageTravelled);
     }
 
     /// <summary>
@@ -169,6 +202,10 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
         {
             currentGuard = targetsInListeningRadius[i].gameObject.GetComponent<GuardsBehaviour>();
             currentGuard.SetSeeking(this.targetPosition);
+        }
+        if(targetsInListeningRadius.Length > 0)
+        {
+            this.soundEffect.PlaySoundEffectDelayed(2, 0.25f);
         }
     }
 }
