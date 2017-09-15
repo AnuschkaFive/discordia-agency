@@ -153,7 +153,6 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
         this.player.ToggleHasThrowableObject();
         this.transform.localEulerAngles = new Vector2(1.0f, 0.0f);
         this.transform.localPosition = this.startPosition;
-        yield return new WaitForSeconds(2);
         this.CallGuards(this.listeningRadius);
         GameObject.Find("Object_01").gameObject.GetComponent<ThrowableObjectOnGround>().Spawn();        
     }

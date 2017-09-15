@@ -279,6 +279,7 @@ public class GuardsBehaviour : MonoBehaviour {
     public void SetPatrolling()
     {
         this.modus = GuardModus.Patrolling;
+        this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy");
         this.aiLerp.speed = this.speed;
         this.aiLerp.rotationSpeed = this.rotationSpeed;
         this.SetNewTarget(this.patrolPoints[currStep]);
@@ -292,6 +293,7 @@ public class GuardsBehaviour : MonoBehaviour {
     public void SetSeeking(Vector2 seekLocation)
     {
         this.modus = GuardModus.Seeking;
+        this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Curious");
         this.aiLerp.speed = this.speed * this.seekingSpeedFactor;
         this.aiLerp.rotationSpeed = this.rotationSpeed * this.seekingSpeedFactor;
         this.SetNewTarget(seekLocation);
@@ -300,13 +302,18 @@ public class GuardsBehaviour : MonoBehaviour {
     
     private IEnumerator IsSeeking()
     {
+        this.aiLerp.canMove = false;
+        this.aiLerp.canSearch = false;
+        yield return new WaitForSeconds(2);
+        this.aiLerp.canMove = true;
+        this.aiLerp.canSearch = true;
         while (!this.aiLerp.targetReached)
         {
             yield return null;
         }
         this.aiLerp.canMove = false;
         this.aiLerp.canSearch = false;
-        yield return new WaitForSeconds(4); // TODO: Co-Routine that makes the Guard rotate slightly.
+        yield return new WaitForSeconds(5); // TODO: Co-Routine that makes the Guard rotate slightly.
         // If the Guard is still in Seeking mode, meaning: hasn't spotted the player: return to Patrolling.
         if (this.modus == GuardModus.Seeking)
         {
@@ -320,6 +327,7 @@ public class GuardsBehaviour : MonoBehaviour {
     public void SetHunting(Vector2 playerLocation)
     {
         this.modus = GuardModus.Hunting;
+        this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Hunting");
         this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
         this.aiLerp.rotationSpeed = this.rotationSpeed * this.huntingSpeedFactor;
         this.aiLerp.target = this.player.transform;
@@ -390,6 +398,10 @@ public class GuardsBehaviour : MonoBehaviour {
     /// </summary>
     public void SetAlerted()
     {
+        if (this.modus != GuardModus.Hunting)
+        {
+            this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Curious");
+        }
         this.isAlerted = true;
         this.FOV.SetAlertedFOV();
     }

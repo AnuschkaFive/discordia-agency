@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public enum GameStatus
 {
-    Running, Paused, Lost, Won, Length
+    Running, Paused, Starting, Lost, Won, Length
 }
 
 public class GUIGameStatus : MonoBehaviour {
@@ -17,11 +17,20 @@ public class GUIGameStatus : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		currentLevel = SceneManager.GetActiveScene();
-        Debug.Log(gameStatus);   
+        Time.timeScale = 0f;
+        SceneManager.LoadScene("Menu_LevelIntro", LoadSceneMode.Additive);
+        this.gameStatus = GameStatus.Starting;
     }
 	
 	// Update is called once per frame
 	void Update () {
+        if(this.gameStatus == GameStatus.Starting && Input.GetButtonDown("Restart"))
+        {
+            this.gameStatus = GameStatus.Running;
+            Time.timeScale = 1.0f;
+            SceneManager.UnloadSceneAsync("Menu_LevelIntro");
+        }
+
 		if ((this.gameStatus == GameStatus.Lost || this.gameStatus == GameStatus.Won) && Input.GetButtonDown("Restart"))
         {
             Debug.Log("Game is restarted");
