@@ -19,7 +19,7 @@ public class GuardsFOVEditor : Editor {
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleB * fov.viewRadius);
 
         Handles.color = Color.red;
-        foreach(Transform visibleTarget in fov.visibleGuards)
+        foreach(Transform visibleTarget in fov.visibleKnockedOutGuards)
         {
             Handles.DrawLine(fov.transform.parent.position, visibleTarget.position);
         }

@@ -161,12 +161,9 @@ public class GuardsBehaviour : MonoBehaviour {
             //this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Lost, true);
             this.SetHunting(this.FOV.visiblePlayers[0].position);
         }
-        foreach (Transform guard in this.FOV.visibleGuards)
+        if (this.FOV.visibleKnockedOutGuards.Count > 0)
         {
-            if (guard.GetComponent<GuardsBehaviour>().modus == GuardModus.KnockedOut)
-            {
-                this.AlertAllGuards();
-            }
+            this.AlertAllGuards();
         }
     }
 
@@ -178,6 +175,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_KnockedOut");
         this.modus = GuardModus.KnockedOut;
+        this.gameObject.layer = LayerMask.NameToLayer("Knocked Out Guards");
         this.soundEffect.PlaySoundEffect(0);
         this.aiLerp.enabled = false;
         this.SetCanBeKnockedOut(false);

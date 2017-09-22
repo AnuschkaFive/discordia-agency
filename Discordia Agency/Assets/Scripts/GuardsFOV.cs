@@ -28,13 +28,13 @@ public class GuardsFOV : MonoBehaviour {
 
     private LayerMask playerMask;
     private LayerMask obstacleMask;
-    private LayerMask guardMask;
+    private LayerMask knockedOutGuardMask;
 
 
     private GameObject player;
 
     [HideInInspector]
-    public List<Transform> visibleGuards = new List<Transform>();
+    public List<Transform> visibleKnockedOutGuards = new List<Transform>();
 
     [HideInInspector]
     public List<Transform> visiblePlayers = new List<Transform>();
@@ -43,7 +43,7 @@ public class GuardsFOV : MonoBehaviour {
     void Start () {
         this.playerMask = LayerMask.GetMask("Player");
         this.obstacleMask = LayerMask.GetMask("Obstacles");
-        this.guardMask = LayerMask.GetMask("Guards");
+        this.knockedOutGuardMask = LayerMask.GetMask("Knocked Out Guards");
         this.player = GameObject.Find("Player").gameObject;
         this.viewMeshRegular = new Mesh();
         this.viewMeshRegular.name = "ViewMeshRegular";
@@ -81,7 +81,7 @@ public class GuardsFOV : MonoBehaviour {
             this.FindVisibleTargets(this.playerMask, this.viewRadius * this.reducedViewRadius) : 
             this.FindVisibleTargets(this.playerMask, this.viewRadius); 
 
-        this.visibleGuards = this.FindVisibleTargets(this.guardMask, this.viewRadius);
+        this.visibleKnockedOutGuards = this.FindVisibleTargets(this.knockedOutGuardMask, this.viewRadius);
     }
 
     private void UpdateFieldsOfView()
