@@ -180,6 +180,7 @@
     <None Include="Assets\AstarPathfindingProject\Readme_upgrading.txt" />
     <None Include="Assets\AstarPathfindingProject\link.xml" />
     <None Include="Assets\BDO Assets\READ ME - Ez Files Renamer.txt" />
+    <None Include="Assets\Resources\Shaders\Sprites-Multiply.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
