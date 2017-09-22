@@ -18,6 +18,9 @@ public class Target : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log(collision.gameObject.name);
-        this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Won, true);
+        if (collision.gameObject.GetComponent<Player>() != null)
+        {
+            this.gameStatus.GetComponent<GUIGameStatus>().SetGameStatus(GameStatus.Won, true);
+        }
     }
 }

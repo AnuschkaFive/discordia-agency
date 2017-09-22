@@ -137,27 +137,20 @@ public class GuardsBehaviour : MonoBehaviour {
                  break;
              }
         }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    private void FixedUpdate()
-    {
-        if(this.canBeKnockedOut && Input.GetButtonDown("KnockOut"))
+        if (this.canBeKnockedOut && Input.GetButtonDown("KnockOut"))
         {
             this.KnockOutGuard();
             Debug.Log("isKnockedOut");
         }
 
-        if(this.canBeDisguised && Input.GetButtonDown("Disguise"))
+        if (this.canBeDisguised && Input.GetButtonDown("Disguise"))
         {
             this.DisguiseAsGuard();
         }
 
-        if(this.canBeDragged && !this.isBeingDragged && Input.GetButtonDown("Drag"))
+        if (this.canBeDragged && !this.isBeingDragged && Input.GetButtonDown("Drag"))
         {
-           this.StartDragGuard();
+            this.StartDragGuard();
         }
 
         if (this.isBeingDragged && Input.GetButtonUp("Drag"))
@@ -171,7 +164,7 @@ public class GuardsBehaviour : MonoBehaviour {
         }
         foreach (Transform guard in this.FOV.visibleGuards)
         {
-            if(guard.GetComponent<GuardsBehaviour>().modus == GuardModus.KnockedOut)
+            if (guard.GetComponent<GuardsBehaviour>().modus == GuardModus.KnockedOut)
             {
                 this.AlertAllGuards();
             }
@@ -273,8 +266,7 @@ public class GuardsBehaviour : MonoBehaviour {
     private void SetNewTarget(Vector2 newTarget)
     {
         this.target.transform.position = newTarget;
-        this.aiLerp.canSearch = true;
-        this.aiLerp.canMove = true;
+        this.aiLerp.enabled = true;
         this.aiLerp.SearchPath();
     }
 
@@ -287,8 +279,8 @@ public class GuardsBehaviour : MonoBehaviour {
         this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy");
         this.aiLerp.speed = this.speed;
         this.aiLerp.rotationSpeed = this.rotationSpeed;
-        this.SetNewTarget(this.patrolPoints[currStep]);
-        
+        this.aiLerp.repathRate = float.PositiveInfinity;
+        this.SetNewTarget(this.patrolPoints[currStep]);        
     }
 
     /// <summary>
@@ -297,30 +289,27 @@ public class GuardsBehaviour : MonoBehaviour {
     /// <param name="seekLocation">The location the Guard should move to and search at.</param>
     public void SetSeeking(Vector2 seekLocation)
     {
-        if (this.modus != GuardModus.Seeking)
+        if (this.modus != GuardModus.Seeking && this.modus != GuardModus.Hunting && this.modus != GuardModus.KnockedOut)
         {
             this.modus = GuardModus.Seeking;
             this.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Enemy_Curious");
             this.aiLerp.speed = this.speed * this.seekingSpeedFactor;
             this.aiLerp.rotationSpeed = this.rotationSpeed * this.seekingSpeedFactor;
-            this.SetNewTarget(seekLocation);
-            StartCoroutine(this.IsSeeking());
+            this.aiLerp.repathRate = float.PositiveInfinity;
+            StartCoroutine(this.IsSeeking(seekLocation));
         }
     }
     
-    private IEnumerator IsSeeking()
+    private IEnumerator IsSeeking(Vector2 seekLocation)
     {
-        this.aiLerp.canMove = false;
-        this.aiLerp.canSearch = false;
+        this.aiLerp.enabled = false;
         yield return new WaitForSeconds(2);
-        this.aiLerp.canMove = true;
-        this.aiLerp.canSearch = true;
+        this.SetNewTarget(seekLocation);
         while (!this.aiLerp.targetReached)
         {
             yield return null;
         }
-        this.aiLerp.canMove = false;
-        this.aiLerp.canSearch = false;
+        this.aiLerp.enabled = false;
         yield return new WaitForSeconds(5); // TODO: Co-Routine that makes the Guard rotate slightly.
         // If the Guard is still in Seeking mode, meaning: hasn't spotted the player: return to Patrolling.
         if (this.modus == GuardModus.Seeking)
@@ -346,6 +335,7 @@ public class GuardsBehaviour : MonoBehaviour {
             
             this.aiLerp.speed = this.speed * this.huntingSpeedFactor;
             this.aiLerp.rotationSpeed = this.rotationSpeed * this.huntingSpeedFactor;
+            this.aiLerp.repathRate = float.PositiveInfinity;
             this.aiLerp.target = this.player.transform;
             this.AlertAllGuards();
             StartCoroutine(this.HuntPlayer());
@@ -360,19 +350,20 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         while (true)
         {
-            this.aiLerp.canMove = false;
-            this.aiLerp.canSearch = false;
+            this.aiLerp.enabled = false;
             while (this.CanSeePlayer())
             {
+                Debug.Log("Player is seen!");
                 this.RotateTowards(this.lastKnownPlayerPosition.position);
                 this.gun.Shoot();
                 yield return null;
             }
-            this.aiLerp.canSearch = true;
-            this.aiLerp.canMove = true;
+            this.aiLerp.enabled = true;
             this.aiLerp.SearchPath();
             while (!this.CanSeePlayer())
             {
+                Debug.Log("Player is not seen!");
+                this.aiLerp.SearchPath();
                 yield return null;
             }
             yield return null;

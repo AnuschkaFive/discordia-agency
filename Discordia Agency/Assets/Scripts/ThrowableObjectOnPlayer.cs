@@ -170,7 +170,7 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
         this.transform.localEulerAngles = new Vector2(1.0f, 0.0f);
         this.transform.localPosition = this.startPositionOnPlayer;
         this.transform.localScale = this.startScaling;
-        this.CallGuards(this.listeningRadius);
+        this.CallGuards(this.listeningRadius, impact);
         ThrowableObjectOnGround[] allObjects = GameObject.Find("Objects").gameObject.GetComponentsInChildren<ThrowableObjectOnGround>();
         foreach(ThrowableObjectOnGround objectOnGround in allObjects)
         {
@@ -194,14 +194,14 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
     /// Call all Guards within the specified listening radius to the thrown object's target location.
     /// </summary>
     /// <param name="listeningRadius">The specified listening radius in which Guards are located.</param>
-    private void CallGuards(float listeningRadius)
+    private void CallGuards(float listeningRadius, Vector2 impactPosition)
     {
         GuardsBehaviour currentGuard;
         Collider2D[] targetsInListeningRadius = Physics2D.OverlapCircleAll(this.transform.parent.position, listeningRadius, this.guardMask);
         for (int i = 0; i < targetsInListeningRadius.Length; i++)
         {
             currentGuard = targetsInListeningRadius[i].gameObject.GetComponent<GuardsBehaviour>();
-            currentGuard.SetSeeking(this.targetPosition);
+            currentGuard.SetSeeking(impactPosition);
         }
         if(targetsInListeningRadius.Length > 0)
         {
