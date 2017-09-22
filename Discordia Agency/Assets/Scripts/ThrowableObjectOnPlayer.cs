@@ -40,9 +40,12 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
 
     private LayerMask guardMask;
 
-    private float listeningRadius = 10.0f;
+    private float listeningRadius = 7.5f;
 
     private SoundEffect soundEffect;
+
+    // Blueprint for the Impact Radius that will spawn and be displayed.
+    public ThrowableObjectImpactRadius impactRadius;
 
 	// Use this for initialization
 	void Start () {
@@ -164,6 +167,8 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
             yield return null;
         }
         this.soundEffect.PlaySoundEffect(1);
+        //this.SpawnImpactRadius(impact);
+        StartCoroutine(this.SpawnImpactRadii(impact));
         this.transform.parent = this.player.gameObject.transform;
         this.isFlying = false;
         this.player.ToggleHasThrowableObject();
@@ -171,6 +176,7 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
         this.transform.localPosition = this.startPositionOnPlayer;
         this.transform.localScale = this.startScaling;
         this.CallGuards(this.listeningRadius, impact);
+        yield return new WaitForSeconds(10);
         ThrowableObjectOnGround[] allObjects = GameObject.Find("Objects").gameObject.GetComponentsInChildren<ThrowableObjectOnGround>();
         foreach(ThrowableObjectOnGround objectOnGround in allObjects)
         {
@@ -207,5 +213,24 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
         {
             this.soundEffect.PlaySoundEffectDelayed(2, 0.25f);
         }
+    }
+
+    private IEnumerator SpawnImpactRadii(Vector2 position)
+    {
+        float msBetweenWaves = 50;
+        float maxWaves = 10;
+        int i = 0;
+        while (i < maxWaves)
+        {
+            this.SpawnImpactRadius(position);
+            i++;
+            yield return new WaitForSeconds(msBetweenWaves / 1000);
+        }
+    }
+
+    private void SpawnImpactRadius(Vector2 position)
+    {
+        ThrowableObjectImpactRadius newImpactRadius = Instantiate<ThrowableObjectImpactRadius>(this.impactRadius, position, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+        newImpactRadius.SetMaxScaling(this.listeningRadius);
     }
 }
