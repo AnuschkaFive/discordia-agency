@@ -28,6 +28,7 @@ public class GUIGameStatus : MonoBehaviour {
     public float maxBackgroundMusic;
     public bool playerIsBeingHunted = false;
     public bool[] activatedFeatures = new bool[(int)Features.Length];
+    private KeyCode[] cheatKeys = {KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9 };
     
 
 	// Use this for initialization
@@ -84,10 +85,32 @@ public class GUIGameStatus : MonoBehaviour {
         if(this.gameStatus == GameStatus.Won && Input.GetButtonDown("Next"))
         {
             Debug.Log("Load next level: " + this.currentLevel.buildIndex);
-            SceneManager.LoadScene((this.currentLevel.buildIndex + 1) % 7);
+            SceneManager.LoadScene((this.currentLevel.buildIndex + 1) % (SceneManager.sceneCountInBuildSettings - 4));
             Time.timeScale = 1.0f;
         }
+
+        if(this.gameStatus == GameStatus.Paused)
+        {
+            int cheatKey = GetCheatKey();
+            if(cheatKey != -1)
+            {
+                SceneManager.LoadScene(cheatKey + 1);
+                Time.timeScale = 1.0f;
+            }
+        }
 	}
+
+    private int GetCheatKey()
+    {
+        for(int i = 0; i < this.cheatKeys.Length; i++)
+        {
+            if (Input.GetKey(this.cheatKeys[i]))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public void SetGameStatus(GameStatus gameStatusToChange, bool newStatus)
     {
