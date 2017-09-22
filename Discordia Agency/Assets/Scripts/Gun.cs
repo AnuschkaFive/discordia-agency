@@ -9,6 +9,9 @@ public class Gun : MonoBehaviour {
     // Blueprint for the Bullet-Gameobjects that will spawn.
     public Bullet bullet;
 
+    // Location of the gun, where the Bullets will spawn.
+    private Transform gun;
+
     // The rate of fire.
     public float msBetweenShots = 100;
 
@@ -24,6 +27,7 @@ public class Gun : MonoBehaviour {
     {
         this.audioSource = this.transform.GetChild(4).GetComponent<AudioSource>();
         Debug.Log(this.audioSource.name);
+        this.gun = this.transform.Find("Gun");
     }
 
     /// <summary>
@@ -34,7 +38,7 @@ public class Gun : MonoBehaviour {
         if (Time.time > nextShotTime)
         {
             nextShotTime = Time.time + msBetweenShots / 1000;
-            Bullet newBullet = Instantiate<Bullet>(this.bullet, this.transform.position, this.transform.rotation);
+            Bullet newBullet = Instantiate<Bullet>(this.bullet, this.gun.position, this.transform.rotation);
             newBullet.SetSpeed(this.gunVelocity);
             this.audioSource.Play();
         }

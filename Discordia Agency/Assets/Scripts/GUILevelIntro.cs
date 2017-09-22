@@ -7,6 +7,7 @@ public class GUILevelIntro : MonoBehaviour {
     
 	// Use this for initialization
 	void Start () {
-        this.transform.GetChild(SceneManager.GetAllScenes()[0].buildIndex).gameObject.SetActive(true);
-	}
+     //   this.transform.GetChild(SceneManager.GetAllScenes()[0].buildIndex).gameObject.SetActive(true);
+        this.transform.GetChild(SceneManager.GetSceneAt(0).buildIndex).gameObject.SetActive(true);
+    }
 }

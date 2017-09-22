@@ -96,8 +96,8 @@ public class GuardsBehaviour : MonoBehaviour {
         }
         else
         {
+            this.aiLerp.repathRate = float.PositiveInfinity;
             this.aiLerp.canMove = false;
-            this.aiLerp.canSearch = false;
             this.transform.eulerAngles = new Vector3(0f, 0f, this.stationaryLookDirection);
         }
     }
@@ -126,7 +126,6 @@ public class GuardsBehaviour : MonoBehaviour {
                         if (Vector2.Distance((Vector2)this.transform.position, this.patrolPoints[0]) < 0.1f)
                         {
                             //Debug.Log("Stationary Guard is back home!");
-                            this.aiLerp.canSearch = false;
                             this.aiLerp.canMove = false;
                             this.transform.position = this.patrolPoints[0];
                             this.transform.eulerAngles = new Vector3(0f, 0f, this.stationaryLookDirection);
@@ -266,7 +265,7 @@ public class GuardsBehaviour : MonoBehaviour {
     private void SetNewTarget(Vector2 newTarget)
     {
         this.target.transform.position = newTarget;
-        this.aiLerp.enabled = true;
+        this.aiLerp.canMove = true;
         this.aiLerp.SearchPath();
     }
 
@@ -302,14 +301,14 @@ public class GuardsBehaviour : MonoBehaviour {
     
     private IEnumerator IsSeeking(Vector2 seekLocation)
     {
-        this.aiLerp.enabled = false;
+        this.aiLerp.canMove = false;
         yield return new WaitForSeconds(2);
         this.SetNewTarget(seekLocation);
         while (!this.aiLerp.targetReached)
         {
             yield return null;
         }
-        this.aiLerp.enabled = false;
+        this.aiLerp.canMove = false;
         yield return new WaitForSeconds(5); // TODO: Co-Routine that makes the Guard rotate slightly.
         // If the Guard is still in Seeking mode, meaning: hasn't spotted the player: return to Patrolling.
         if (this.modus == GuardModus.Seeking)
@@ -350,7 +349,7 @@ public class GuardsBehaviour : MonoBehaviour {
     {
         while (true)
         {
-            this.aiLerp.enabled = false;
+            this.aiLerp.canMove = false;
             while (this.CanSeePlayer())
             {
                 Debug.Log("Player is seen!");
@@ -358,7 +357,7 @@ public class GuardsBehaviour : MonoBehaviour {
                 this.gun.Shoot();
                 yield return null;
             }
-            this.aiLerp.enabled = true;
+            this.aiLerp.canMove = true;
             this.aiLerp.SearchPath();
             while (!this.CanSeePlayer())
             {

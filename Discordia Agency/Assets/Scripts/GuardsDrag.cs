@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class GuardsDrag : MonoBehaviour {
 
+    private GUIGameStatus gameStatus;
+
 	// Use this for initialization
 	void Start () {
-		
+        this.gameStatus = GameObject.Find("GameStatus").GetComponent<GUIGameStatus>();
 	}
 	
 	// Update is called once per frame
@@ -16,7 +18,7 @@ public class GuardsDrag : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.name == "Player" && this.gameStatus.activatedFeatures[(int)Features.Drag])
         {
             this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDragged(true);
         }
@@ -24,7 +26,7 @@ public class GuardsDrag : MonoBehaviour {
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.name == "Player" && this.gameStatus.activatedFeatures[(int)Features.Drag])
         {
             this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDragged(false);
         }

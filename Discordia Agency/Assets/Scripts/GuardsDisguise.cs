@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class GuardsDisguise : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    private GUIGameStatus gameStatus;
+
+    // Use this for initialization
+    void Start () {
+        this.gameStatus = GameObject.Find("GameStatus").GetComponent<GUIGameStatus>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -16,7 +18,7 @@ public class GuardsDisguise : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if ((collision.gameObject.name == "Player") && (!collision.gameObject.GetComponent<Player>().isDisguised))
+        if ((collision.gameObject.name == "Player") && (!collision.gameObject.GetComponent<Player>().isDisguised) && this.gameStatus.activatedFeatures[(int)Features.Disguise])
         {
             this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDisguised(true);
         }
@@ -24,7 +26,7 @@ public class GuardsDisguise : MonoBehaviour {
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.name == "Player" && this.gameStatus.activatedFeatures[(int)Features.Disguise])
         {
             this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeDisguised(false);
         }

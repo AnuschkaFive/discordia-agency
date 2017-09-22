@@ -8,6 +8,11 @@ public enum GameStatus
     Running, Paused, Starting, Lost, Won, Length
 }
 
+public enum Features
+{
+    KnockOut, Drag, Disguise, Length
+}
+
 public class GUIGameStatus : MonoBehaviour {
 
     GameStatus gameStatus;
@@ -22,6 +27,8 @@ public class GUIGameStatus : MonoBehaviour {
     public float minFadedBackgroundMusicInMenu;
     public float maxBackgroundMusic;
     public bool playerIsBeingHunted = false;
+    public bool[] activatedFeatures = new bool[(int)Features.Length];
+    
 
 	// Use this for initialization
 	void Start () {
@@ -35,7 +42,7 @@ public class GUIGameStatus : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(this.gameStatus == GameStatus.Starting && Input.GetButtonDown("Restart"))
+        if(this.gameStatus == GameStatus.Starting && Input.GetButtonDown("Next"))
         {
             this.gameStatus = GameStatus.Running;
             Time.timeScale = 1.0f;
@@ -43,7 +50,7 @@ public class GUIGameStatus : MonoBehaviour {
             StartCoroutine(this.TuneUp(soundFadePerFrameInMenu, maxBackgroundMusic));
         }
 
-		if ((this.gameStatus == GameStatus.Lost || this.gameStatus == GameStatus.Won) && Input.GetButtonDown("Restart"))
+		if ((this.gameStatus == GameStatus.Lost && Input.GetButtonDown("Next")) || (this.gameStatus == GameStatus.Won && Input.GetButtonDown("Restart")))
         {
             Debug.Log("Game is restarted");
             SceneManager.LoadScene(currentLevel.name);
@@ -74,7 +81,7 @@ public class GUIGameStatus : MonoBehaviour {
             Application.Quit();
         }
 
-        if(this.gameStatus == GameStatus.Won && Input.GetButtonDown("NextLevel"))
+        if(this.gameStatus == GameStatus.Won && Input.GetButtonDown("Next"))
         {
             Debug.Log("Load next level: " + this.currentLevel.buildIndex);
             SceneManager.LoadScene((this.currentLevel.buildIndex + 1) % 7);

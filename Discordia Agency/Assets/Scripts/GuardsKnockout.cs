@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class GuardsKnockout : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    private GUIGameStatus gameStatus;
+
+    // Use this for initialization
+    void Start () {
+        this.gameStatus = GameObject.Find("GameStatus").GetComponent<GUIGameStatus>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -16,11 +18,17 @@ public class GuardsKnockout : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeKnockedOut(true);
+        if (collision.gameObject.name == "Player" && this.gameStatus.activatedFeatures[(int)Features.KnockOut])
+        {
+            this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeKnockedOut(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeKnockedOut(false);
+        if (collision.gameObject.name == "Player" && this.gameStatus.activatedFeatures[(int)Features.KnockOut])
+        {
+            this.transform.parent.gameObject.GetComponent<GuardsBehaviour>().SetCanBeKnockedOut(false);
+        }
     }
 }
