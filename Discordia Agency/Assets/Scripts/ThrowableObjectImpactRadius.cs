@@ -6,7 +6,7 @@ public class ThrowableObjectImpactRadius : MonoBehaviour {
     private float minScaling = 0.1f;
     private float maxScaling = 10.0f;
     private float scalingDuration = 0.5f;
-    private float scalePerSecond;
+    private float scalePerSecond = 0.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -16,6 +16,7 @@ public class ThrowableObjectImpactRadius : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         this.transform.localScale += new Vector3(this.scalePerSecond, this.scalePerSecond, 0.0f) * Time.deltaTime;
+        Debug.Log("Current Scale: " + this.transform.localScale + ", ScalePerSecond: " + this.scalePerSecond);
         if(this.transform.localScale.x >= maxScaling)
         {
             GameObject.Destroy(this.gameObject);

@@ -68,11 +68,15 @@ public class GuardsBehaviour : MonoBehaviour {
 
     private LayerMask collisionMask;
 
+    private LayerMask obstacleMask;
+
     private Gun gun;
 
     private Transform lastKnownPlayerPosition;
 
     private SoundEffect soundEffect;
+
+    private bool isRotatingStationary = false;
 
     /// <summary>
     /// Use this for initialization
@@ -87,6 +91,7 @@ public class GuardsBehaviour : MonoBehaviour {
         this.seeker = this.GetComponent<Seeker>();
         this.player = GameObject.Find("Player").GetComponent<Player>();
         this.collisionMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Obstacles"));
+        this.obstacleMask = LayerMask.GetMask("Obstacles");
         this.gun = this.GetComponentInChildren<Gun>();
         this.soundEffect = this.GetComponent<SoundEffect>();
         // Set the Guard's target to the initial patrol point.
@@ -128,7 +133,11 @@ public class GuardsBehaviour : MonoBehaviour {
                             //Debug.Log("Stationary Guard is back home!");
                             this.aiLerp.canMove = false;
                             this.transform.position = this.patrolPoints[0];
-                            this.transform.eulerAngles = new Vector3(0f, 0f, this.stationaryLookDirection);
+                            if (!this.isRotatingStationary)
+                            {
+                                StartCoroutine(this.StationaryGuardLooksAround(this.stationaryLookDirection));
+                            }
+                            //this.transform.eulerAngles = new Vector3(0f, 0f, this.stationaryLookDirection);
                         }
                     }
                           
@@ -293,6 +302,7 @@ public class GuardsBehaviour : MonoBehaviour {
             this.aiLerp.speed = this.speed * this.seekingSpeedFactor;
             this.aiLerp.rotationSpeed = this.rotationSpeed * this.seekingSpeedFactor;
             this.aiLerp.repathRate = float.PositiveInfinity;
+            this.transform.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
             StartCoroutine(this.IsSeeking(seekLocation));
         }
     }
@@ -302,17 +312,54 @@ public class GuardsBehaviour : MonoBehaviour {
         this.aiLerp.canMove = false;
         yield return new WaitForSeconds(2);
         this.SetNewTarget(seekLocation);
-        while (!this.aiLerp.targetReached)
+        // while (!this.aiLerp.targetReached)
+        while (!this.CanSeeImpactLocation(seekLocation) || Vector2.Distance((Vector2)this.transform.position, seekLocation) > 0.5f)
         {
             yield return null;
         }
         this.aiLerp.canMove = false;
-        yield return new WaitForSeconds(5); // TODO: Co-Routine that makes the Guard rotate slightly.
+        float seekingTime = 6.0f;
+        float startTime = Time.time;
+        float startRotation = this.transform.eulerAngles.z;
+        float targetRotationOffset = Random.Range(40.0f, 60.0f) * Mathf.Sign(Random.Range(-1.0f, 1.0f));
+        float currTime = 0.0f;
+        while (this.modus == GuardModus.Seeking && seekingTime > Time.time - startTime)
+        {
+            //Debug.Log("Wache rotiert!");
+            if(Mathf.Abs(this.transform.eulerAngles.z - ((startRotation + targetRotationOffset) % 360)) > 1.0f)
+            {
+                currTime += (Time.deltaTime * (this.rotationSpeed * 0.01f));
+                Vector3 rotation = this.transform.eulerAngles;
+                rotation.z = Mathf.LerpAngle(rotation.z, startRotation + targetRotationOffset, currTime);
+                this.transform.eulerAngles = rotation;
+            } else
+            {
+                targetRotationOffset = Random.Range(40.0f, 60.0f) * (Mathf.Sign(targetRotationOffset) * -1.0f);
+                currTime = 0.0f;
+                yield return new WaitForSeconds(Random.Range(0.1f, 0.5f));
+            }
+            yield return null;
+        }
         // If the Guard is still in Seeking mode, meaning: hasn't spotted the player: return to Patrolling.
         if (this.modus == GuardModus.Seeking)
         {
             this.SetPatrolling();
         }
+    }
+
+    /// <summary>
+    /// Checks whether the Guard currently has line of sight to the impact location of the thrown object.
+    /// </summary>
+    /// <param name="seekLocation"></param>
+    /// <returns></returns>
+    private bool CanSeeImpactLocation(Vector2 seekLocation)
+    {
+        RaycastHit2D[] hit = new RaycastHit2D[1];
+        return (Physics2D.RaycastNonAlloc(this.transform.position, 
+            seekLocation - (Vector2)this.transform.position, 
+            hit, 
+            Vector2.Distance(seekLocation, (Vector2)this.transform.position) - 0.1f, // Subtract 0.1, since Impact Location might be slightly on top of wall = behind obstacle.
+            this.obstacleMask) == 0);
     }
 
     /// <summary>
@@ -421,5 +468,47 @@ public class GuardsBehaviour : MonoBehaviour {
         {
             guard.SetAlerted();
         }
+    }
+
+    /// <summary>
+    /// Makes a stationary Guard that has returned to his position rotate in the direction he is meant to look.
+    /// Then lets him rotate slightly left and right.
+    /// </summary>
+    /// <param name="stationaryLookDirection"></param>
+    /// <returns></returns>
+    private IEnumerator StationaryGuardLooksAround(float stationaryLookDirection)
+    {
+        this.isRotatingStationary = true;
+        float startTime = 0.0f;
+        while (this.modus == GuardModus.Patrolling && Mathf.Abs(this.transform.eulerAngles.z - stationaryLookDirection) > 1.0f)
+        {
+            //Debug.Log("Wache rotiert in Ausgangposition");
+            startTime += Time.deltaTime * (this.rotationSpeed * 0.01f);
+            Vector3 rotation = this.transform.eulerAngles;
+            rotation.z = Mathf.LerpAngle(rotation.z, stationaryLookDirection, startTime);
+            this.transform.eulerAngles = rotation;
+            yield return null;
+        }
+        float targetOffsetRotation = Random.Range(10.0f, 30.0f) * Mathf.Sign(Random.Range(-1.0f, 1.0f));
+        startTime = 0.0f;
+        while(this.modus == GuardModus.Patrolling && this.isStationary)
+        {
+            //Debug.Log("Wache rotiert zufällig: derzeitiger Winkel " + this.transform.eulerAngles.z + ", Zielwinkel: " + (stationaryLookDirection + targetOffsetRotation) % 360 );
+            if (Mathf.Abs(this.transform.eulerAngles.z - ((stationaryLookDirection + targetOffsetRotation) % 360)) > 1.0f)
+            {
+                startTime += Time.deltaTime * (this.rotationSpeed * 0.01f);
+                Vector3 rotation = this.transform.eulerAngles;
+                rotation.z = Mathf.LerpAngle(rotation.z, stationaryLookDirection + targetOffsetRotation, startTime);
+                this.transform.eulerAngles = rotation;
+            }
+            else
+            {
+                yield return new WaitForSeconds(Random.Range(0.5f, 2.0f));
+                targetOffsetRotation = Random.Range(10.0f, 30.0f) * (Mathf.Sign(targetOffsetRotation) * -1.0f);
+                startTime = 0.0f;
+            }
+            yield return null;
+        }
+        this.isRotatingStationary = false;
     }
 }

@@ -40,7 +40,7 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
 
     private LayerMask guardMask;
 
-    private float listeningRadius = 7.5f;
+    private float listeningRadius = 5.0f;
 
     private SoundEffect soundEffect;
 
@@ -203,7 +203,7 @@ public class ThrowableObjectOnPlayer : MonoBehaviour {
     private void CallGuards(float listeningRadius, Vector2 impactPosition)
     {
         GuardsBehaviour currentGuard;
-        Collider2D[] targetsInListeningRadius = Physics2D.OverlapCircleAll(this.transform.parent.position, listeningRadius, this.guardMask);
+        Collider2D[] targetsInListeningRadius = Physics2D.OverlapCircleAll(impactPosition, listeningRadius, this.guardMask);
         for (int i = 0; i < targetsInListeningRadius.Length; i++)
         {
             currentGuard = targetsInListeningRadius[i].gameObject.GetComponent<GuardsBehaviour>();

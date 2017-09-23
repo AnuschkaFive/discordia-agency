@@ -366,4 +366,20 @@ public class AILerp : VersionedMonoBehaviour {
 			return interpolator.position;
 		}
 	}
+
+    /**
+     * Returns the current path. ADDED BY ANNA FRANZISKA HORNE.
+     */
+    public ABPath GetCurrentPath()
+    {
+        return this.path;
+    }
+
+    /**
+     * Returns whether the path has finished calulcating.  ADDED BY ANNA FRANZISKA HORNE.
+     */
+    public bool GetCanSearchAgain()
+    {
+        return this.canSearchAgain;
+    }
 }
