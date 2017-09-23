@@ -126,13 +126,22 @@ public class GuardsFOV : MonoBehaviour {
         Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(this.transform.parent.position, viewRadius, mask);
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
+            //Debug.Log("Targets in View Radius: " + targetsInViewRadius.Length);
+            float targetRadius = 0.4f;
             Transform target = targetsInViewRadius[i].transform;
-            Vector2 dirToTarget = (target.position - this.transform.parent.position).normalized;
-            if(Vector2.Angle(this.transform.parent.up, dirToTarget) < this.viewAngle / 2)
+            Vector2 dirToTargetCenter = (target.position - this.transform.parent.position).normalized;
+            Vector2 targetLeftEdgePosition = target.position + Vector3.Cross(Vector3.forward, dirToTargetCenter) * targetRadius;
+            Vector2 targetRightEdgePosition = target.position + Vector3.Cross(dirToTargetCenter, Vector3.forward) * targetRadius;
+            Vector2 dirToTargetLeftEdge = (targetLeftEdgePosition - (Vector2)this.transform.parent.position).normalized;
+            Vector2 dirToTargetRightEdge = (targetRightEdgePosition - (Vector2)this.transform.parent.position).normalized;
+            float angleToTargetLeftEdge = Vector2.Angle(this.transform.parent.up, dirToTargetLeftEdge);
+            float angleToTargetRightEdge = Vector2.Angle(this.transform.parent.up, dirToTargetRightEdge);
+            
+            if (Mathf.Min(angleToTargetLeftEdge, angleToTargetRightEdge) <= this.viewAngle / 2.0f)
             {
                 float distToTarget = Vector2.Distance(this.transform.parent.position, target.position);
-
-                if(!Physics2D.Raycast(this.transform.parent.position, dirToTarget, distToTarget, obstacleMask))
+                Vector2 dirToTargetClosestEdge = angleToTargetLeftEdge < angleToTargetRightEdge ? dirToTargetLeftEdge : dirToTargetRightEdge;
+                if (!Physics2D.Raycast(this.transform.parent.position, dirToTargetClosestEdge, distToTarget, obstacleMask))
                 {
                     visibleTargets.Add(target);
                     //Debug.Log(target.gameObject.name + " ran into " + this.transform.parent.gameObject.name + "'s View!");
