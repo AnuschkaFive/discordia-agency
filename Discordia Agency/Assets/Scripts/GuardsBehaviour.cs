@@ -213,7 +213,10 @@ public class GuardsBehaviour : MonoBehaviour {
         this.transform.GetChild((int)GuardRanges.Disguise).gameObject.SetActive(false);
         this.SetCanBeDisguised(false);
         this.soundEffect.PlaySoundEffect(1);
-        GameObject.Find("Player").gameObject.GetComponent<Player>().ToggleDisguise();
+        if (!GameObject.Find("Player").gameObject.GetComponent<Player>().isDisguised)
+        {
+            GameObject.Find("Player").gameObject.GetComponent<Player>().ToggleDisguise();
+        }
     }
 
     /// <summary>
@@ -326,7 +329,7 @@ public class GuardsBehaviour : MonoBehaviour {
         while (this.modus == GuardModus.Seeking && seekingTime > Time.time - startTime)
         {
             //Debug.Log("Wache rotiert!");
-            if(Mathf.Abs(this.transform.eulerAngles.z - ((startRotation + targetRotationOffset) % 360)) > 1.0f)
+            if(Mathf.Abs(this.transform.eulerAngles.z - this.NormalizeDegree(startRotation + targetRotationOffset)) > 1.0f)
             {
                 currTime += (Time.deltaTime * (this.rotationSpeed * 0.01f));
                 Vector3 rotation = this.transform.eulerAngles;
@@ -482,7 +485,7 @@ public class GuardsBehaviour : MonoBehaviour {
         float startTime = 0.0f;
         while (this.modus == GuardModus.Patrolling && Mathf.Abs(this.transform.eulerAngles.z - stationaryLookDirection) > 1.0f)
         {
-            //Debug.Log("Wache rotiert in Ausgangposition");
+            Debug.Log("Wache rotiert in Ausgangposition");
             startTime += Time.deltaTime * (this.rotationSpeed * 0.01f);
             Vector3 rotation = this.transform.eulerAngles;
             rotation.z = Mathf.LerpAngle(rotation.z, stationaryLookDirection, startTime);
@@ -493,8 +496,8 @@ public class GuardsBehaviour : MonoBehaviour {
         startTime = 0.0f;
         while(this.modus == GuardModus.Patrolling && this.isStationary)
         {
-            //Debug.Log("Wache rotiert zufällig: derzeitiger Winkel " + this.transform.eulerAngles.z + ", Zielwinkel: " + (stationaryLookDirection + targetOffsetRotation) % 360 );
-            if (Mathf.Abs(this.transform.eulerAngles.z - ((stationaryLookDirection + targetOffsetRotation) % 360)) > 1.0f)
+            //Debug.Log("Wache rotiert zufällig: derzeitiger Winkel " + this.transform.eulerAngles.z + ", Zielwinkel: " + this.NormalizeDegree(stationaryLookDirection + targetOffsetRotation));
+            if (Mathf.Abs(this.transform.eulerAngles.z - this.NormalizeDegree(stationaryLookDirection + targetOffsetRotation)) > 1.0f)
             {
                 startTime += Time.deltaTime * (this.rotationSpeed * 0.01f);
                 Vector3 rotation = this.transform.eulerAngles;
@@ -510,5 +513,16 @@ public class GuardsBehaviour : MonoBehaviour {
             yield return null;
         }
         this.isRotatingStationary = false;
+    }
+
+
+    /// <summary>
+    /// Normalizes a degree to be within 0 and 360.
+    /// </summary>
+    /// <param name="degree">The degree to be normalized. Can be positive or negative.</param>
+    /// <returns>The normalized degree between 0 and 360.</returns>
+    private float NormalizeDegree(float degree)
+    {
+        return degree - (Mathf.Floor(degree / 360.0f) * 360.0f);
     }
 }
